@@ -3,7 +3,19 @@
  * Phase 3: Visual Implementation (No Data Binding)
  */
 
+import { initDashboardController } from '../controllers/dashboardController.js';
+import { initSearchController, selectCity } from '../controllers/searchController.js';
+import { initThemeController } from '../controllers/themeController.js';
+
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 0. Application Bootstrap ---
+    initDashboardController();
+    initThemeController();
+    initSearchController();
+    
+    // Load Default City
+    selectCity('London');
+
     
     // --- 1. Sidebar Toggle Logic ---
     const sidebar = document.getElementById('sidebar');

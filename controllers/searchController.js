@@ -1,79 +1,140 @@
 /**
  * Aether Weather - Search Controller
- * Phase 4.5 Architecture Skeleton
- * 
- * Orchestrates search input debouncing, autocomplete fetching,
- * and the final result selection flow.
- * Dispatches fetched and normalized payloads into the central store.
+ * Phase 4.6
  */
 
 import { store } from '../data/store.js';
 import { fetchWeatherByCity, searchCities } from '../services/weatherService.js';
 import { normalizeWeatherPayload } from '../services/normalizationService.js';
 
-// ==========================================
-// INTERNAL ARCHITECTURE
-// ==========================================
-
 const DOM = {
-    searchInput: null,
-    searchResultsList: null,
-    searchOverlay: null
+    searchInput: document.getElementById('search-input'),
+    searchContainer: document.getElementById('search-input')?.closest('button')
 };
 
-// ==========================================
-// INPUT HANDLING & DEBOUNCING
-// ==========================================
-
 let debounceTimeout = null;
+let isFetching = false;
+let autocompleteDropdown = null;
 
-/**
- * Captures user keystrokes and debounces the autocomplete API call.
- */
 function handleSearchInput(event) {
-    // Skeleton: Debounce logic
-    // Awaits timeout, then triggers fetchAutocompleteResults()
+    const query = event.target.value.trim();
+    
+    if (!query) {
+        closeDropdown();
+        return;
+    }
+
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(async () => {
+        try {
+            const results = await searchCities(query);
+            renderDropdown(results);
+        } catch (error) {
+            console.warn('Autocomplete fetch failed:', error);
+            closeDropdown();
+        }
+    }, 500);
 }
 
-/**
- * Fetches partial city matches from WeatherAPI and renders the dropdown.
- */
-async function fetchAutocompleteResults(query) {
-    // Skeleton: 
-    // const results = await searchCities(query);
-    // renderDropdown(results);
+function handleSearchSubmit(event) {
+    if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        if (query) {
+            closeDropdown();
+            selectCity(query);
+        }
+    }
 }
 
-/**
- * Updates the dropdown UI with autocomplete suggestions.
- */
 function renderDropdown(results) {
-    // Implementation deferred
+    closeDropdown(); 
+    if (!results || results.length === 0) return;
+    if (!DOM.searchContainer) return;
+
+    autocompleteDropdown = document.createElement('div');
+    autocompleteDropdown.className = 'glass-panel custom-scrollbar';
+    autocompleteDropdown.style.position = 'absolute';
+    autocompleteDropdown.style.top = '100%';
+    autocompleteDropdown.style.left = '0';
+    autocompleteDropdown.style.right = '0';
+    autocompleteDropdown.style.zIndex = '100';
+    autocompleteDropdown.style.marginTop = '0.5rem';
+    autocompleteDropdown.style.maxHeight = '200px';
+    autocompleteDropdown.style.overflowY = 'auto';
+    autocompleteDropdown.style.display = 'flex';
+    autocompleteDropdown.style.flexDirection = 'column';
+    autocompleteDropdown.style.padding = '0.5rem 0';
+    
+    DOM.searchContainer.style.position = 'relative';
+
+    results.forEach(city => {
+        const item = document.createElement('div');
+        item.style.padding = '0.75rem 1rem';
+        item.style.cursor = 'pointer';
+        item.style.color = 'var(--color-on-surface)';
+        item.style.fontSize = '14px';
+        item.textContent = `${city.name}, ${city.country}`;
+        
+        item.addEventListener('mouseenter', () => item.style.backgroundColor = 'rgba(255,255,255,0.1)');
+        item.addEventListener('mouseleave', () => item.style.backgroundColor = 'transparent');
+        
+        item.addEventListener('click', () => {
+            closeDropdown();
+            selectCity(city.name);
+        });
+        
+        autocompleteDropdown.appendChild(item);
+    });
+
+    DOM.searchContainer.appendChild(autocompleteDropdown);
 }
 
-// ==========================================
-// PUBLIC EXPORTS
-// ==========================================
+function closeDropdown() {
+    if (autocompleteDropdown) {
+        autocompleteDropdown.remove();
+        autocompleteDropdown = null;
+    }
+}
 
-/**
- * Executes the full data acquisition flow for a selected city.
- * Sets loading state -> Fetches raw data -> Normalizes -> Dispatches to Store.
- * 
- * @param {string} cityString - The canonical city name chosen by the user
- */
+document.addEventListener('click', (e) => {
+    if (autocompleteDropdown && DOM.searchContainer && !DOM.searchContainer.contains(e.target)) {
+        closeDropdown();
+    }
+});
+
 export async function selectCity(cityString) {
-    // Skeleton:
-    // store.setState({ loading: true });
-    // const rawData = await fetchWeatherByCity(cityString);
-    // const normalizedData = normalizeWeatherPayload(rawData);
-    // store.setState(normalizedData);
+    if (isFetching) return;
+    if (!cityString) return;
+
+    isFetching = true;
+    
+    if (DOM.searchInput) {
+        DOM.searchInput.disabled = true;
+    }
+
+    store.setState({ loading: true, error: null });
+
+    try {
+        const rawData = await fetchWeatherByCity(cityString);
+        const normalizedData = normalizeWeatherPayload(rawData);
+        store.setState({ ...normalizedData, loading: false });
+    } catch (error) {
+        console.error('Weather fetch failed:', error);
+        store.setState({ loading: false, error: error.message });
+    } finally {
+        isFetching = false;
+        if (DOM.searchInput) {
+            DOM.searchInput.disabled = false;
+            DOM.searchInput.value = ''; 
+        }
+    }
 }
 
-/**
- * Initializes the Search Controller.
- * Caches DOM nodes and attaches event listeners.
- * Note: Actual initialization logic is deferred to the Bootstrap phase.
- */
 export function initSearchController() {
-    // Skeleton: Add input event listeners
+    if (DOM.searchInput) {
+        DOM.searchInput.addEventListener('input', handleSearchInput);
+        DOM.searchInput.addEventListener('keypress', handleSearchSubmit);
+    } else {
+        console.warn('SearchController: search-input missing from DOM');
+    }
 }

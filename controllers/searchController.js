@@ -9,7 +9,7 @@ import { normalizeWeatherPayload } from '../services/normalizationService.js';
 
 const DOM = {
     searchInput: document.getElementById('search-input'),
-    searchContainer: document.getElementById('search-input')?.closest('button')
+    searchContainer: document.getElementById('search-container')
 };
 
 let debounceTimeout = null;
@@ -52,31 +52,12 @@ function renderDropdown(results) {
     if (!DOM.searchContainer) return;
 
     autocompleteDropdown = document.createElement('div');
-    autocompleteDropdown.className = 'glass-panel custom-scrollbar';
-    autocompleteDropdown.style.position = 'absolute';
-    autocompleteDropdown.style.top = '100%';
-    autocompleteDropdown.style.left = '0';
-    autocompleteDropdown.style.right = '0';
-    autocompleteDropdown.style.zIndex = '100';
-    autocompleteDropdown.style.marginTop = '0.5rem';
-    autocompleteDropdown.style.maxHeight = '200px';
-    autocompleteDropdown.style.overflowY = 'auto';
-    autocompleteDropdown.style.display = 'flex';
-    autocompleteDropdown.style.flexDirection = 'column';
-    autocompleteDropdown.style.padding = '0.5rem 0';
-    
-    DOM.searchContainer.style.position = 'relative';
+    autocompleteDropdown.className = 'glass-panel custom-scrollbar search-dropdown';
 
     results.forEach(city => {
         const item = document.createElement('div');
-        item.style.padding = '0.75rem 1rem';
-        item.style.cursor = 'pointer';
-        item.style.color = 'var(--color-on-surface)';
-        item.style.fontSize = '14px';
+        item.className = 'search-dropdown-item';
         item.textContent = `${city.name}, ${city.country}`;
-        
-        item.addEventListener('mouseenter', () => item.style.backgroundColor = 'rgba(255,255,255,0.1)');
-        item.addEventListener('mouseleave', () => item.style.backgroundColor = 'transparent');
         
         item.addEventListener('click', () => {
             closeDropdown();

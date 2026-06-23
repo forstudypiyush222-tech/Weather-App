@@ -133,11 +133,18 @@
         <main class="main-content">
             <!-- Top App Bar -->
             <header class="app-bar">
-                <div class="flex-row gap-4 align-center">
-                    <button class="glass-panel profile-btn" style="padding: 0.5rem 1rem;">
+                <div class="app-bar-left">
+                    <!-- Future logo area -->
+                </div>
+                
+                <div class="search-container" id="search-container">
+                    <div class="glass-panel search-box" style="padding: 0.5rem 1rem;">
                         <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
-                        <input id="search-input" type="text" placeholder="Search..." style="background: none; border: none; color: white; outline: none; font-family: var(--font-body); width: 120px;" />
-                    </button>
+                        <input id="search-input" type="text" placeholder="Search cities..." autocomplete="off" style="background: none; border: none; color: white; outline: none; font-family: var(--font-body); width: 250px;" />
+                    </div>
+                </div>
+
+                <div class="app-bar-right">
                     <button class="glass-panel profile-btn" id="profile-button">
                         <span class="text-body-md text-on-surface-variant">User Profile</span>
                         <div class="avatar">

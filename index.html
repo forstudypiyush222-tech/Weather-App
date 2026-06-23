@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether Weather - Dashboard</title>
+    
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Background System -->
+    <div id="dashboard-background">
+        <div class="bg-overlay"></div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="brand-area">
+                <button class="sidebar-toggle-btn" id="sidebar-toggle">
+                    <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
+                </button>
+                <div class="sidebar-label">
+                    <span class="material-symbols-outlined text-primary" style="font-size: 28px; font-variation-settings: 'FILL' 1;">routine</span>
+                    <span class="text-headline-md font-bold tracking-wider">Aether</span>
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li>
+                    <a class="nav-item active" href="#" title="Current">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span>
+                        <span class="sidebar-label text-body-md font-medium">Current</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" href="#" title="Hourly">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">schedule</span>
+                        <span class="sidebar-label text-body-md font-medium">Hourly</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" href="#" title="Daily">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">calendar_month</span>
+                        <span class="sidebar-label text-body-md font-medium">Daily</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" href="#" title="Radar">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">satellite_alt</span>
+                        <span class="sidebar-label text-body-md font-medium">Radar</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" href="#" title="Map">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">map</span>
+                        <span class="sidebar-label text-body-md font-medium">Map</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" href="#" title="Air Quality">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">air</span>
+                        <span class="sidebar-label text-body-md font-medium">Air Quality</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" href="#" title="Sun & Moon">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">brightness_4</span>
+                        <span class="sidebar-label text-body-md font-medium">Sun & Moon</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" href="#" title="Alerts">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">warning</span>
+                        <span class="sidebar-label text-body-md font-medium">Alerts</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="glass-panel sidebar-location-card">
+                    <div class="flex-col gap-1">
+                        <div class="flex-row align-center gap-2 text-primary">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">location_on</span>
+                            <span class="text-label-caps">Location</span>
+                        </div>
+                        <div class="flex-col" style="margin-left: 1.75rem;">
+                            <span id="sidebar-city" class="text-headline-md font-bold">Chapra</span>
+                            <span id="sidebar-region" class="text-body-md text-on-surface-variant">Bihar, India</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-col gap-1" style="margin-left: 1.75rem;">
+                        <div id="sidebar-time" class="text-headline-md font-bold" style="line-height: 1;">11:08 PM</div>
+                        <div id="sidebar-date" class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Mon, Jun 22</div>
+                    </div>
+
+                    <div class="flex-row align-center gap-4" style="margin-left: 1.75rem;">
+                        <div class="hero-icon-box" style="width: 2.5rem; height: 2.5rem;">
+                            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">thunderstorm</span>
+                        </div>
+                        <div class="flex-col">
+                            <span class="text-headline-md font-bold" style="line-height: 1;">26°</span>
+                            <span class="text-body-md text-on-surface-variant" style="font-size: 12px;">Thunderstorm</span>
+                        </div>
+                    </div>
+
+                    <button class="search-btn">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+                        <span class="text-body-md font-medium">Search City</span>
+                    </button>
+                </div>
+            </div>
+
+            <ul class="nav-menu" style="flex-grow: 0; margin-top: 1rem;">
+                <li>
+                    <a class="nav-item" href="#" title="Settings">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
+                        <span class="sidebar-label text-body-md font-medium">Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top App Bar -->
+            <header class="app-bar">
+                <div class="flex-row gap-4 align-center">
+                    <button class="glass-panel profile-btn" style="padding: 0.5rem 1rem;">
+                        <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
+                        <input id="search-input" type="text" placeholder="Search..." style="background: none; border: none; color: white; outline: none; font-family: var(--font-body); width: 120px;" />
+                    </button>
+                    <button class="glass-panel profile-btn" id="profile-button">
+                        <span class="text-body-md text-on-surface-variant">User Profile</span>
+                        <div class="avatar">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlImD_shffG2-pKbFgdRuQUtV4JR1Zzwh6gziqaLadITf47jjDRrH6bP4LqM-wQaG-9PFtt5ZSFAku_FSSG9889RLJiXViH6_DfjbdlRQbfYS2_SQv0fYSi4eCb4Hw_9D1hvFHH2NmIfqf_kU7lB250E0edRWMBjIVBHO1dZM-4GRuWDy0khc6Gg0PLm1RkqKqIRmQafqVCQyehiTTgoDCC5LIngorlX_uqnIEW4Jmm_DKpWYkmqW6D0YT2o0_vtxuqHLOb9eZuuA" alt="Avatar">
+                        </div>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Canvas -->
+            <div class="scroll-canvas custom-scrollbar">
+                <div class="dashboard-grid">
+                    
+                    <!-- Top Section -->
+                    <div class="grid-row-top">
+                        
+                        <!-- Hero Section -->
+                        <section id="hero-section" class="hero-content">
+                            <div style="margin-bottom: 2.5rem;">
+                                <h1 class="text-headline-lg font-bold uppercase tracking-wider">Aether</h1>
+                                <p class="text-label-caps text-on-surface-variant">Weather Intelligence</p>
+                            </div>
+                            
+                            <div class="flex-row align-end gap-4">
+                                <h1 id="hero-temperature" class="text-display-hero drop-shadow-lg" style="text-shadow: 0 4px 24px rgba(0,0,0,0.5);">26°</h1>
+                            </div>
+                            
+                            <p class="text-body-lg text-on-surface-variant" style="margin-bottom: 1.5rem;">
+                                Feels like <span id="hero-feels-like" class="text-tertiary">29°</span>
+                            </p>
+                            
+                            <div class="flex-row align-center gap-4" style="margin-bottom: 1rem;">
+                                <div class="hero-icon-box">
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px; font-variation-settings: 'FILL' 1;">thunderstorm</span>
+                                </div>
+                                <h2 id="hero-condition" class="text-headline-lg font-bold">Thunderstorm</h2>
+                            </div>
+                            
+                            <div class="flex-row align-center gap-2 text-on-surface-variant text-body-md" style="margin-bottom: 2rem;">
+                                <span class="material-symbols-outlined" style="font-size: 14px;">location_on</span>
+                                <span id="hero-location">Chapra, Bihar, India</span>
+                                <span class="material-symbols-outlined" style="font-size: 14px;">near_me</span>
+                            </div>
+                            
+                            <div class="hero-mini-cards">
+                                <div class="glass-panel mini-card">
+                                    <span class="material-symbols-outlined text-error" style="font-size: 14px;">arrow_upward</span>
+                                    <div class="flex-col">
+                                        <span class="text-data-point">30°</span>
+                                        <span class="text-label-caps text-on-surface-variant">Max</span>
+                                    </div>
+                                </div>
+                                <div class="glass-panel mini-card">
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">arrow_downward</span>
+                                    <div class="flex-col">
+                                        <span class="text-data-point">24°</span>
+                                        <span class="text-label-caps text-on-surface-variant">Min</span>
+                                    </div>
+                                </div>
+                                <div class="glass-panel mini-card">
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">water_drop</span>
+                                    <div class="flex-col">
+                                        <span class="text-data-point">82%</span>
+                                        <span class="text-label-caps text-on-surface-variant">Rain</span>
+                                    </div>
+                                </div>
+                                <div class="glass-panel mini-card">
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 14px;">air</span>
+                                    <div class="flex-col">
+                                        <span class="text-data-point">13 km/h</span>
+                                        <span class="text-label-caps text-on-surface-variant">Wind</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Today's Summary -->
+                        <section id="today-summary-card">
+                            <div class="glass-panel summary-card-content">
+                                <div class="flex-row justify-between align-center" style="margin-bottom: 1.5rem;">
+                                    <div class="flex-col">
+                                        <h3 class="text-headline-md font-bold">Today's Summary</h3>
+                                        <span class="text-body-md text-on-surface-variant">Mon, Jun 22</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex-row align-center gap-6" style="margin-bottom: 2rem;">
+                                    <div style="width: 4rem; height: 4rem; position: relative; flex-shrink: 0;">
+                                        <span class="material-symbols-outlined text-tertiary" style="font-size: 64px; font-variation-settings: 'FILL' 1; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">rainy</span>
+                                    </div>
+                                    <div>
+                                        <p id="summary-condition" class="text-body-lg font-medium">Moderate rain</p>
+                                        <p class="text-body-md text-on-surface-variant">for the next 3 hours</p>
+                                    </div>
+                                </div>
+
+                                <div class="summary-list">
+                                    <div class="summary-list-item">
+                                        <div class="flex-row align-center gap-3 text-on-surface-variant">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">device_thermostat</span>
+                                            <span class="text-body-md">Max Temperature</span>
+                                        </div>
+                                        <span class="text-data-point">30°</span>
+                                    </div>
+                                    <div class="summary-list-item">
+                                        <div class="flex-row align-center gap-3 text-on-surface-variant">
+                                            <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">device_thermostat</span>
+                                            <span class="text-body-md">Min Temperature</span>
+                                        </div>
+                                        <span class="text-data-point">24°</span>
+                                    </div>
+                                    <div class="summary-list-item">
+                                        <div class="flex-row align-center gap-3 text-on-surface-variant">
+                                            <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">water_drop</span>
+                                            <span class="text-body-md">Rain Probability</span>
+                                        </div>
+                                        <span class="text-data-point">82%</span>
+                                    </div>
+                                    <div class="summary-list-item">
+                                        <div class="flex-row align-center gap-3 text-on-surface-variant">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">air</span>
+                                            <span class="text-body-md">Wind</span>
+                                        </div>
+                                        <span class="text-data-point">13 km/h</span>
+                                    </div>
+                                    <div class="summary-list-item">
+                                        <div class="flex-row align-center gap-3 text-on-surface-variant">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">wb_sunny</span>
+                                            <span class="text-body-md">UV Index</span>
+                                        </div>
+                                        <span class="text-data-point">2 Low</span>
+                                    </div>
+                                </div>
+
+                                <button class="btn-outline">
+                                    <span class="text-body-md">View full details</span>
+                                    <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Middle Section -->
+                    <div class="grid-row-middle">
+                        
+                        <!-- Hourly Forecast -->
+                        <section id="hourly-forecast-card" class="forecast-card-wrapper">
+                            <div class="glass-panel card-inner">
+                                <div class="card-header">
+                                    <h3 class="text-headline-md font-bold">Hourly Forecast</h3>
+                                </div>
+                                
+                                <div class="chart-container flex-col">
+                                    <div style="flex-grow: 1; min-height: 0; position: relative;">
+                                        <!-- Chart Placeholder -->
+                                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; border-bottom: 2px dashed rgba(255,255,255,0.2);"></div>
+                                    </div>
+                                    
+                                    <div style="overflow-x: auto; padding-bottom: 0.5rem;" class="custom-scrollbar">
+                                        <div class="hourly-timeline">
+                                            <div class="hourly-item">
+                                                <span class="material-symbols-outlined text-secondary" style="font-size: 20px; font-variation-settings: 'FILL' 1;">thunderstorm</span>
+                                                <span class="text-data-point" style="font-size: 12px;">26°</span>
+                                                <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">Now</span>
+                                            </div>
+                                            <div class="hourly-item">
+                                                <span class="material-symbols-outlined text-tertiary" style="font-size: 20px; font-variation-settings: 'FILL' 1;">rainy</span>
+                                                <span class="text-data-point" style="font-size: 12px;">25°</span>
+                                                <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">12 AM</span>
+                                            </div>
+                                            <div class="hourly-item">
+                                                <span class="material-symbols-outlined text-tertiary" style="font-size: 20px; font-variation-settings: 'FILL' 1;">rainy</span>
+                                                <span class="text-data-point" style="font-size: 12px;">25°</span>
+                                                <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">1 AM</span>
+                                            </div>
+                                            <div class="hourly-item">
+                                                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">cloudy</span>
+                                                <span class="text-data-point" style="font-size: 12px;">24°</span>
+                                                <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">2 AM</span>
+                                            </div>
+                                            <div class="hourly-item">
+                                                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">cloudy</span>
+                                                <span class="text-data-point" style="font-size: 12px;">24°</span>
+                                                <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">3 AM</span>
+                                            </div>
+                                            <div class="hourly-item">
+                                                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">cloudy</span>
+                                                <span class="text-data-point" style="font-size: 12px;">23°</span>
+                                                <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">4 AM</span>
+                                            </div>
+                                            <div class="hourly-item">
+                                                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">cloudy</span>
+                                                <span class="text-data-point" style="font-size: 12px;">23°</span>
+                                                <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">5 AM</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="toggle-group custom-scrollbar">
+                                    <button class="text-label-caps toggle-btn active">Temp.</button>
+                                    <button class="text-label-caps toggle-btn">Precipitation</button>
+                                    <button class="text-label-caps toggle-btn">Wind</button>
+                                    <button class="text-label-caps toggle-btn">Pressure</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Daily Forecast -->
+                        <section id="daily-forecast-card" class="forecast-card-wrapper">
+                            <div class="glass-panel card-inner" style="background: rgba(23, 31, 51, 0.4);">
+                                <div class="card-header">
+                                    <h3 class="text-headline-md font-bold">Daily Forecast</h3>
+                                </div>
+                                
+                                <div class="daily-scroll custom-scrollbar">
+                                    <div class="daily-container">
+                                        <div class="daily-card">
+                                            <span class="text-label-caps text-on-surface-variant">Mon 22</span>
+                                            <div class="daily-icon-box">
+                                                <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">thunderstorm</span>
+                                            </div>
+                                            <div class="flex-col align-center">
+                                                <span class="text-data-point" style="font-size: 14px;">30°</span>
+                                                <span class="text-data-point text-on-surface-variant" style="font-size: 14px;">24°</span>
+                                            </div>
+                                            <div style="margin-top: auto; padding-top: 0.25rem;">
+                                                <span class="text-data-point text-tertiary" style="font-size: 14px;">82%</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="daily-card">
+                                            <span class="text-label-caps text-on-surface-variant">Tue 23</span>
+                                            <div class="daily-icon-box">
+                                                <span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">rainy</span>
+                                            </div>
+                                            <div class="flex-col align-center">
+                                                <span class="text-data-point" style="font-size: 14px;">31°</span>
+                                                <span class="text-data-point text-on-surface-variant" style="font-size: 14px;">24°</span>
+                                            </div>
+                                            <div style="margin-top: auto; padding-top: 0.25rem;">
+                                                <span class="text-data-point text-tertiary" style="font-size: 14px;">20%</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="daily-card">
+                                            <span class="text-label-caps text-on-surface-variant">Wed 24</span>
+                                            <div class="daily-icon-box">
+                                                <span class="material-symbols-outlined text-secondary">wb_sunny</span>
+                                            </div>
+                                            <div class="flex-col align-center">
+                                                <span class="text-data-point" style="font-size: 14px;">32°</span>
+                                                <span class="text-data-point text-on-surface-variant" style="font-size: 14px;">25°</span>
+                                            </div>
+                                            <div style="margin-top: auto; padding-top: 0.25rem;">
+                                                <span class="text-data-point text-tertiary" style="font-size: 14px;">10%</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="daily-card">
+                                            <span class="text-label-caps text-on-surface-variant">Thu 25</span>
+                                            <div class="daily-icon-box">
+                                                <span class="material-symbols-outlined text-on-surface-variant">cloudy</span>
+                                            </div>
+                                            <div class="flex-col align-center">
+                                                <span class="text-data-point" style="font-size: 14px;">30°</span>
+                                                <span class="text-data-point text-on-surface-variant" style="font-size: 14px;">23°</span>
+                                            </div>
+                                            <div style="margin-top: auto; padding-top: 0.25rem;">
+                                                <span class="text-data-point text-tertiary" style="font-size: 14px;">65%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="daily-card">
+                                            <span class="text-label-caps text-on-surface-variant">Fri 26</span>
+                                            <div class="daily-icon-box">
+                                                <span class="material-symbols-outlined text-on-surface-variant">cloudy</span>
+                                            </div>
+                                            <div class="flex-col align-center">
+                                                <span class="text-data-point" style="font-size: 14px;">29°</span>
+                                                <span class="text-data-point text-on-surface-variant" style="font-size: 14px;">23°</span>
+                                            </div>
+                                            <div style="margin-top: auto; padding-top: 0.25rem;">
+                                                <span class="text-data-point text-tertiary" style="font-size: 14px;">40%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- AQI Card -->
+                        <section id="aqi-card" class="forecast-card-wrapper">
+                            <div class="glass-panel card-inner">
+                                <div class="card-header">
+                                    <h3 class="text-headline-md font-bold">Air Quality</h3>
+                                </div>
+                                
+                                <div class="flex-row align-center gap-6" style="margin-bottom: 1.5rem;">
+                                    <div class="aqi-gauge-container">
+                                        <svg class="aqi-svg" viewBox="0 0 100 100">
+                                            <circle class="aqi-circle-bg" cx="50" cy="50" fill="none" r="44" stroke="currentColor" stroke-width="10"></circle>
+                                            <circle class="aqi-circle-fg" cx="50" cy="50" fill="none" r="44" stroke="currentColor" stroke-dasharray="276.46" stroke-dashoffset="138.23" stroke-width="10"></circle>
+                                        </svg>
+                                        <div class="flex-col align-center" style="position: relative; z-index: 1;">
+                                            <span id="aqi-score" class="text-headline-lg font-bold" style="line-height: 1;">153</span>
+                                            <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">AQI</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-col justify-center">
+                                        <span id="aqi-status" class="text-headline-md text-secondary" style="line-height: 1.2;">Unhealthy</span>
+                                        <span class="text-body-md text-on-surface-variant" style="font-size: 12px; line-height: 1.2;">for Sensitive Groups</span>
+                                        <div class="flex-row align-center gap-2" style="margin-top: 0.5rem;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%;" class="bg-secondary"></span>
+                                            <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Main Pollutant: PM2.5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-col gap-2" style="padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                                    <span class="text-body-md font-medium text-on-surface-variant" style="font-size: 12px;">Health Advisory</span>
+                                    <ul class="flex-col gap-2">
+                                        <li class="flex-row gap-2" style="align-items: flex-start;">
+                                            <span class="bg-secondary" style="width: 4px; height: 4px; border-radius: 50%; margin-top: 0.375rem;"></span>
+                                            <p class="text-on-surface-variant" style="font-size: 11px; line-height: 1.2;">Sensitive groups should reduce prolonged outdoor activity.</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Metrics Strip -->
+                    <section id="metrics-strip" class="metrics-strip-wrapper">
+                        <div class="glass-panel metrics-strip custom-scrollbar">
+                            <div class="metrics-container">
+                                
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;">device_thermostat</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Feels Like</span>
+                                        <span class="text-data-point">29°</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;">humidity_percentage</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Humidity</span>
+                                        <span class="text-data-point">96%</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">air</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Wind</span>
+                                        <span class="text-data-point">13 km/h</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">speed</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Pressure</span>
+                                        <span class="text-data-point">1003 hPa</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">visibility</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Visibility</span>
+                                        <span class="text-data-point">10 km</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">cloud</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Clouds</span>
+                                        <span class="text-data-point">63%</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;">water_drop</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Dew Point</span>
+                                        <span class="text-data-point">25°</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">brightness_low</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">UV Index</span>
+                                        <span class="text-data-point">2 Low</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">wb_sunny</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Sunrise</span>
+                                        <span class="text-data-point">4:50 AM</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">nightlight_round</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Sunset</span>
+                                        <span class="text-data-point">6:36 PM</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item">
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">brightness_2</span>
+                                    <div class="flex-col">
+                                        <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Moon</span>
+                                        <span class="text-data-point">Waxing Gibbous</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/ui.js"></script>
+</body>
+</html>

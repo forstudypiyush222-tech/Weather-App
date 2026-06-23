@@ -12,5 +12,12 @@ export const API_CONFIG = {
     API_KEY: localKey,
     
     // Default base URL for WeatherAPI
-    BASE_URL: 'https://api.weatherapi.com/v1'
+    BASE_URL: 'https://api.weatherapi.com/v1',
+    
+    // API Routing Endpoints
+    ENDPOINTS: {
+        forecast: '/forecast.json',
+        search: '/search.json',
+        current: '/current.json'
+    }
 };

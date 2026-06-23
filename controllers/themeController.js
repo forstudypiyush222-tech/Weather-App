@@ -24,7 +24,7 @@ function updateTheme(weatherState) {
     }
     
     // Background swapping using inline style
-    DOM.backgroundContainer.style.backgroundImage = `url('assets/Background/${weatherState}.jpg')`;
+    DOM.backgroundContainer.style.backgroundImage = `url('assets/Background/${weatherState}.webp')`;
     
     // Update data attribute for CSS variable bindings
     document.documentElement.setAttribute('data-theme', weatherState);

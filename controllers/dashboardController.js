@@ -1,6 +1,6 @@
 /**
  * Aether Weather - Dashboard Controller
- * Phase 4.6
+ * Phase 4.6.1 (Data Contract Repair)
  */
 
 import { store } from '../data/store.js';
@@ -93,43 +93,58 @@ function handleStateChange(state) {
 }
 
 function renderHero(current, location, todayDaily) {
-    setText(DOM.heroTemperature, `${Math.round(current.temp_c)}°`);
-    setText(DOM.heroFeelsLike, `${Math.round(current.feelslike_c)}°`);
-    setText(DOM.heroCondition, current.condition.text);
-    setText(DOM.heroLocation, `${location.name}, ${location.region}, ${location.country}`);
-    setIcon(DOM.heroIcon, current.icon_name || 'cloud');
+    setText(DOM.heroTemperature, Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : '--°');
+    setText(DOM.heroFeelsLike, Number.isFinite(current.feelsLike) ? `${Math.round(current.feelsLike)}°` : '--°');
+    setText(DOM.heroCondition, current.condition || '--');
+    
+    const city = location.city || '--';
+    const region = location.region || '--';
+    const country = location.country || '--';
+    setText(DOM.heroLocation, `${city}, ${region}, ${country}`);
+    
+    setIcon(DOM.heroIcon, current.icon_name || 'cloud'); // (Fallback if missing)
 
     if (todayDaily) {
-        setText(DOM.heroMaxTemp, `${Math.round(todayDaily.day.maxtemp_c)}°`);
-        setText(DOM.heroMinTemp, `${Math.round(todayDaily.day.mintemp_c)}°`);
-        setText(DOM.heroRainProb, `${todayDaily.day.daily_chance_of_rain}%`);
+        setText(DOM.heroMaxTemp, Number.isFinite(todayDaily.maxTemp) ? `${Math.round(todayDaily.maxTemp)}°` : '--°');
+        setText(DOM.heroMinTemp, Number.isFinite(todayDaily.minTemp) ? `${Math.round(todayDaily.minTemp)}°` : '--°');
+        setText(DOM.heroRainProb, Number.isFinite(todayDaily.rainChance) ? `${todayDaily.rainChance}%` : '--%');
     }
-    setText(DOM.heroWind, `${Math.round(current.wind_kph)} km/h`);
+    setText(DOM.heroWind, Number.isFinite(current.windSpeed) ? `${Math.round(current.windSpeed)} km/h` : '-- km/h');
 }
 
 function renderSidebar(current, location) {
-    setText(DOM.sidebarCity, location.name);
-    setText(DOM.sidebarRegion, `${location.region}, ${location.country}`);
+    setText(DOM.sidebarCity, location.city || '--');
+    setText(DOM.sidebarRegion, `${location.region || '--'}, ${location.country || '--'}`);
     
-    const dt = new Date(location.localtime);
-    if (!isNaN(dt.getTime())) {
-        setText(DOM.sidebarTime, dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }));
-        setText(DOM.sidebarDate, dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+    if (location.localTime && location.localDate) {
+        // Normalization returns localDate (YYYY-MM-DD) and localTime (HH:MM)
+        // Combine them into a safe standard string to parse
+        const dt = new Date(`${location.localDate}T${location.localTime}`);
+        if (!isNaN(dt.getTime())) {
+            setText(DOM.sidebarTime, dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }));
+            setText(DOM.sidebarDate, dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+        } else {
+            setText(DOM.sidebarTime, location.localTime);
+            setText(DOM.sidebarDate, location.localDate);
+        }
     } else {
-        setText(DOM.sidebarTime, location.localtime);
-        setText(DOM.sidebarDate, '');
+        setText(DOM.sidebarTime, '--:--');
+        setText(DOM.sidebarDate, '--');
     }
 
-    setText(DOM.sidebarTemp, `${Math.round(current.temp_c)}°`);
-    setText(DOM.sidebarCondition, current.condition.text);
+    setText(DOM.sidebarTemp, Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : '--°');
+    setText(DOM.sidebarCondition, current.condition || '--');
     setIcon(DOM.sidebarIcon, current.icon_name || 'cloud');
 }
 
 function renderSummary(todayDaily, current) {
     setIcon(DOM.summaryIcon, current.icon_name || 'cloud');
-    setText(DOM.summaryCondition, current.condition.text);
-    setText(DOM.summaryMaxTemp, `${Math.round(todayDaily.day.maxtemp_c)}°`);
-    setText(DOM.summaryMinTemp, `${Math.round(todayDaily.day.mintemp_c)}°`);
+    setText(DOM.summaryCondition, current.condition || '--');
+    
+    const max = todayDaily?.maxTemp;
+    const min = todayDaily?.minTemp;
+    setText(DOM.summaryMaxTemp, Number.isFinite(max) ? `${Math.round(max)}°` : '--°');
+    setText(DOM.summaryMinTemp, Number.isFinite(min) ? `${Math.round(min)}°` : '--°');
     setText(DOM.summarySecondary, 'Current Conditions'); 
 }
 
@@ -141,12 +156,21 @@ function renderHourlyForecast(hourlyData) {
         const item = document.createElement('div');
         item.className = 'hourly-item';
         
-        const dt = new Date(hour.time);
-        const timeLabel = hour.time_label || (!isNaN(dt.getTime()) ? dt.toLocaleTimeString('en-US', { hour: 'numeric' }) : hour.time);
+        const tempText = Number.isFinite(hour.temperature) ? `${Math.round(hour.temperature)}°` : '--°';
+        
+        let timeLabel = hour.time || '--:--';
+        if (timeLabel.includes(':')) {
+            const [h] = timeLabel.split(':');
+            const dateObj = new Date();
+            dateObj.setHours(parseInt(h, 10), 0, 0);
+            if (!isNaN(dateObj.getTime())) {
+                timeLabel = dateObj.toLocaleTimeString('en-US', { hour: 'numeric' });
+            }
+        }
         
         item.innerHTML = `
             <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px; font-variation-settings: 'FILL' 1;">${hour.icon_name || 'cloud'}</span>
-            <span class="text-data-point" style="font-size: 12px;">${Math.round(hour.temp_c)}°</span>
+            <span class="text-data-point" style="font-size: 12px;">${tempText}</span>
             <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">${timeLabel}</span>
         `;
         DOM.hourlyContainer.appendChild(item);
@@ -160,17 +184,23 @@ function renderDailyForecast(dailyData) {
     dailyData.forEach(day => {
         const card = document.createElement('div');
         card.className = 'daily-card';
+        
+        const dayLabel = day.day || day.date || '--';
+        const maxTempText = Number.isFinite(day.maxTemp) ? `${Math.round(day.maxTemp)}°` : '--°';
+        const minTempText = Number.isFinite(day.minTemp) ? `${Math.round(day.minTemp)}°` : '--°';
+        const rainChanceText = Number.isFinite(day.rainChance) ? `${day.rainChance}%` : '--%';
+        
         card.innerHTML = `
-            <span class="text-label-caps text-on-surface-variant">${day.day_label || day.date}</span>
+            <span class="text-label-caps text-on-surface-variant">${dayLabel}</span>
             <div class="daily-icon-box">
                 <span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 1;">${day.icon_name || 'cloud'}</span>
             </div>
             <div class="flex-col align-center">
-                <span class="text-data-point" style="font-size: 14px;">${Math.round(day.day.maxtemp_c)}°</span>
-                <span class="text-data-point text-on-surface-variant" style="font-size: 14px;">${Math.round(day.day.mintemp_c)}°</span>
+                <span class="text-data-point" style="font-size: 14px;">${maxTempText}</span>
+                <span class="text-data-point text-on-surface-variant" style="font-size: 14px;">${minTempText}</span>
             </div>
             <div style="margin-top: auto; padding-top: 0.25rem;">
-                <span class="text-data-point text-tertiary" style="font-size: 14px;">${day.day.daily_chance_of_rain}%</span>
+                <span class="text-data-point text-tertiary" style="font-size: 14px;">${rainChanceText}</span>
             </div>
         `;
         DOM.dailyContainer.appendChild(card);
@@ -178,28 +208,26 @@ function renderDailyForecast(dailyData) {
 }
 
 function renderAQI(airQuality) {
-    const score = airQuality.aqi || airQuality['us-epa-index'] || 50; 
-    setText(DOM.aqiScore, score);
+    const score = airQuality.aqiScore; 
+    setText(DOM.aqiScore, Number.isFinite(score) ? score : '--');
     
-    let status = 'Good';
-    let colorClass = 'text-success';
-    if (score > 50) { status = 'Moderate'; colorClass = 'text-warning'; }
-    if (score > 100) { status = 'Unhealthy for Sensitive Groups'; colorClass = 'text-error'; }
-    if (score > 150) { status = 'Unhealthy'; colorClass = 'text-error'; }
-    if (score > 200) { status = 'Very Unhealthy'; colorClass = 'text-error'; }
-    if (score > 300) { status = 'Hazardous'; colorClass = 'text-error'; }
-
     if (DOM.aqiStatus) {
+        const status = airQuality.aqiStatus || 'Unknown';
         DOM.aqiStatus.textContent = status;
+        
+        let colorClass = 'text-success';
+        if (score > 50) colorClass = 'text-warning';
+        if (score > 100) colorClass = 'text-error';
+        
         DOM.aqiStatus.className = `text-headline-md ${colorClass}`;
     }
 
-    setText(DOM.aqiMainPollutant, `Main Pollutant: ${airQuality.main_pollutant || 'PM2.5'}`);
-    setText(DOM.aqiHealthAdvisory, `Health Advisory for ${status} conditions.`);
+    setText(DOM.aqiMainPollutant, `Main Pollutant: ${airQuality.mainPollutant || '--'}`);
+    setText(DOM.aqiHealthAdvisory, airQuality.healthAdvisory || 'No advisory data available.');
     
     if (DOM.aqiGaugeFill) {
         const maxScore = 300;
-        const boundedScore = Math.min(score, maxScore);
+        const boundedScore = Math.min(Number.isFinite(score) ? score : 0, maxScore);
         const ratio = boundedScore / maxScore;
         const offset = 276.46 - (276.46 * ratio);
         DOM.aqiGaugeFill.style.strokeDashoffset = offset;
@@ -207,17 +235,18 @@ function renderAQI(airQuality) {
 }
 
 function renderMetricsStrip(current, astronomy) {
-    setText(DOM.metricFeelsLike, `${Math.round(current.feelslike_c)}°`);
-    setText(DOM.metricHumidity, `${current.humidity}%`);
-    setText(DOM.metricWind, `${Math.round(current.wind_kph)} km/h`);
-    setText(DOM.metricPressure, `${current.pressure_mb} hPa`);
-    setText(DOM.metricVisibility, `${current.vis_km} km`);
-    setText(DOM.metricCloudCover, `${current.cloud}%`);
-    setText(DOM.metricDewPoint, current.dewpoint_c !== undefined ? `${Math.round(current.dewpoint_c)}°` : '--');
-    setText(DOM.metricUV, `${current.uv} UV`);
-    setText(DOM.metricSunrise, astronomy.sunrise || '--');
-    setText(DOM.metricSunset, astronomy.sunset || '--');
-    setText(DOM.metricMoonPhase, astronomy.moon_phase || '--');
+    setText(DOM.metricFeelsLike, Number.isFinite(current.feelsLike) ? `${Math.round(current.feelsLike)}°` : '--°');
+    setText(DOM.metricHumidity, Number.isFinite(current.humidity) ? `${current.humidity}%` : '--%');
+    setText(DOM.metricWind, Number.isFinite(current.windSpeed) ? `${Math.round(current.windSpeed)} km/h` : '-- km/h');
+    setText(DOM.metricPressure, Number.isFinite(current.pressure) ? `${current.pressure} hPa` : '-- hPa');
+    setText(DOM.metricVisibility, Number.isFinite(current.visibility) ? `${current.visibility} km` : '-- km');
+    setText(DOM.metricCloudCover, Number.isFinite(current.cloudCover) ? `${current.cloudCover}%` : '--%');
+    setText(DOM.metricDewPoint, Number.isFinite(current.dewPoint) ? `${Math.round(current.dewPoint)}°` : '--°');
+    setText(DOM.metricUV, Number.isFinite(current.uv) ? `${current.uv} UV` : '-- UV');
+    
+    setText(DOM.metricSunrise, astronomy.sunrise || '--:--');
+    setText(DOM.metricSunset, astronomy.sunset || '--:--');
+    setText(DOM.metricMoonPhase, astronomy.moonPhase || '--');
 }
 
 export function initDashboardController() {

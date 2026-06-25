@@ -32,6 +32,9 @@ const DOM = {
     summarySecondary: document.getElementById('summary-secondary-text'),
     summaryMaxTemp: document.getElementById('summary-max-temp'),
     summaryMinTemp: document.getElementById('summary-min-temp'),
+    summaryRain: document.getElementById('summary-rain'),
+    summaryWind: document.getElementById('summary-wind'),
+    summaryUV: document.getElementById('summary-uv'),
 
     // Hourly/Daily
     hourlyContainer: document.getElementById('hourly-forecast-container'),
@@ -64,6 +67,15 @@ function setText(element, text) {
 
 function setIcon(element, iconName) {
     if (element) element.textContent = iconName;
+}
+
+function getUVClassification(uv) {
+    if (!Number.isFinite(uv)) return '--';
+    if (uv <= 2) return `${uv} Low`;
+    if (uv <= 5) return `${uv} Moderate`;
+    if (uv <= 7) return `${uv} High`;
+    if (uv <= 10) return `${uv} Very High`;
+    return `${uv} Extreme`;
 }
 
 function handleStateChange(state) {
@@ -143,8 +155,15 @@ function renderSummary(todayDaily, current) {
     
     const max = todayDaily?.maxTemp;
     const min = todayDaily?.minTemp;
+    const rainProb = todayDaily?.rainChance;
+
     setText(DOM.summaryMaxTemp, Number.isFinite(max) ? `${Math.round(max)}°` : '--°');
     setText(DOM.summaryMinTemp, Number.isFinite(min) ? `${Math.round(min)}°` : '--°');
+    setText(DOM.summaryRain, Number.isFinite(rainProb) ? `${rainProb}%` : '--%');
+    
+    setText(DOM.summaryWind, Number.isFinite(current.windSpeed) ? `${Math.round(current.windSpeed)} km/h` : '-- km/h');
+    setText(DOM.summaryUV, getUVClassification(current.uv));
+
     setText(DOM.summarySecondary, 'Current Conditions'); 
 }
 

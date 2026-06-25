@@ -557,7 +557,8 @@ body.onboarding-mode .dashboard-grid {
 
 /* Middle Cards Baseline */
 .forecast-card-wrapper {
-  height: 280px;
+  min-height: 280px;
+  height: auto;
   overflow: hidden;
 }
 

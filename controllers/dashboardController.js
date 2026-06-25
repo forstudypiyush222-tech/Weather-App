@@ -78,8 +78,51 @@ function getUVClassification(uv) {
     return `${uv} Extreme`;
 }
 
+let currentToastTimeout = null;
+let currentToastElement = null;
+
+function showErrorToast(errorMessage) {
+    const container = document.getElementById('toast-container');
+    if (!container || !errorMessage) return;
+
+    if (currentToastElement) {
+        currentToastElement.remove();
+        if (currentToastTimeout) clearTimeout(currentToastTimeout);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'glass-panel toast-message text-on-surface';
+    toast.style.borderLeft = '4px solid var(--color-error)';
+    
+    toast.innerHTML = `
+        <span class="material-symbols-outlined text-error" style="font-size: 24px;">error</span>
+        <div class="flex-col">
+            <span class="text-label-caps text-error">Error</span>
+            <span class="text-body-md">${errorMessage}</span>
+        </div>
+    `;
+
+    container.appendChild(toast);
+    currentToastElement = toast;
+
+    currentToastTimeout = setTimeout(() => {
+        toast.classList.add('toast-exit');
+        toast.addEventListener('animationend', () => {
+            toast.remove();
+            if (currentToastElement === toast) {
+                currentToastElement = null;
+            }
+            store.setState({ error: null });
+        });
+    }, 5000);
+}
+
 function handleStateChange(state) {
-    if (state.loading || state.error) return;
+    if (state.loading) return;
+    
+    if (state.error) {
+        showErrorToast(state.error);
+    }
     
     if (state.current && state.location) {
         renderHero(state.current, state.location, state.daily?.[0]);

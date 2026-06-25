@@ -61,6 +61,9 @@ const DOM = {
     metricMoonPhase: document.getElementById('metric-moon-phase')
 };
 
+let hourlyChartInstance = null;
+let hourlyChartGradient = null;
+
 function setText(element, text) {
     if (element) element.textContent = text;
 }
@@ -140,7 +143,8 @@ function handleStateChange(state) {
     }
     
     if (state.hourly && state.ui) {
-        renderHourlyForecast(state.hourly, state.ui.selectedHourlyMetric);
+        renderHourlyTimeline(state.hourly, state.ui.selectedHourlyMetric);
+        updateHourlyChart(state.hourly, state.ui.selectedHourlyMetric);
     }
     
     if (state.daily && state.daily.length > 0) {
@@ -220,7 +224,7 @@ function renderSummary(todayDaily, current) {
     setText(DOM.summarySecondary, 'Current Conditions'); 
 }
 
-function renderHourlyForecast(hourlyData, selectedMetric = 'temp') {
+function renderHourlyTimeline(hourlyData, selectedMetric = 'temp') {
     // Sync toggle active states
     const toggleBtns = document.querySelectorAll('#hourly-metric-toggles .toggle-btn');
     toggleBtns.forEach(btn => {
@@ -272,6 +276,153 @@ function renderHourlyForecast(hourlyData, selectedMetric = 'temp') {
         `;
         DOM.hourlyContainer.appendChild(item);
     });
+}
+
+function updateHourlyChart(hourlyData, selectedMetric) {
+    if (!hourlyData || hourlyData.length === 0) return;
+    
+    // Ensure Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js is not loaded yet.');
+        return;
+    }
+
+    const canvas = document.getElementById('hourly-chart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    
+    // Cache the gradient
+    if (!hourlyChartGradient) {
+        hourlyChartGradient = ctx.createLinearGradient(0, 0, 0, 300);
+        hourlyChartGradient.addColorStop(0, 'rgba(0, 212, 255, 0.4)');
+        hourlyChartGradient.addColorStop(1, 'rgba(0, 212, 255, 0.0)');
+    }
+
+    // Prepare Data
+    const labels = hourlyData.map(h => {
+        let timeLabel = h.time || '--:--';
+        if (timeLabel.includes(':')) {
+            const [hr] = timeLabel.split(':');
+            const dateObj = new Date();
+            dateObj.setHours(parseInt(hr, 10), 0, 0);
+            if (!isNaN(dateObj.getTime())) {
+                return dateObj.toLocaleTimeString('en-US', { hour: 'numeric' });
+            }
+        }
+        return timeLabel;
+    });
+
+    let data = [];
+    let chartType = 'line';
+    let borderColor = '#00d4ff';
+    let backgroundColor = hourlyChartGradient;
+    let tooltipSuffix = '';
+    let tooltipTitle = '';
+    let yAxisMin = undefined;
+    let yAxisMax = undefined;
+    let tension = 0.4;
+    let borderWidth = 3;
+    let pointRadius = 4;
+    let pointHoverRadius = 6;
+    let fill = true;
+
+    if (selectedMetric === 'temp') {
+        data = hourlyData.map(h => Number.isFinite(h.temperature) ? h.temperature : null);
+        tooltipSuffix = '°';
+        tooltipTitle = 'Temperature';
+    } else if (selectedMetric === 'precipitation') {
+        data = hourlyData.map(h => Number.isFinite(h.rainChance) ? h.rainChance : null);
+        chartType = 'bar';
+        backgroundColor = 'rgba(0, 150, 255, 0.6)';
+        borderColor = 'rgba(0, 150, 255, 1)';
+        borderWidth = 1;
+        yAxisMin = 0;
+        yAxisMax = 100;
+        tooltipSuffix = '%';
+        tooltipTitle = 'Rain Chance';
+        fill = false;
+    } else if (selectedMetric === 'wind') {
+        data = hourlyData.map(h => Number.isFinite(h.windSpeed) ? h.windSpeed : null);
+        borderColor = '#aaaaff';
+        // Subtly different gradient for wind if desired, but we can reuse a simple fill
+        backgroundColor = 'rgba(170, 170, 255, 0.2)'; 
+        tooltipSuffix = ' km/h';
+        tooltipTitle = 'Wind Speed';
+        fill = true;
+    }
+
+    if (!hourlyChartInstance) {
+        // Initialize once
+        hourlyChartInstance = new Chart(ctx, {
+            type: chartType,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: tooltipTitle,
+                    data: data,
+                    borderColor: borderColor,
+                    backgroundColor: backgroundColor,
+                    borderWidth: borderWidth,
+                    tension: tension,
+                    pointRadius: chartType === 'line' ? pointRadius : 0,
+                    pointHoverRadius: chartType === 'line' ? pointHoverRadius : 0,
+                    fill: fill,
+                    borderRadius: chartType === 'bar' ? 4 : 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.raw}${tooltipSuffix}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { display: false }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)', drawBorder: false },
+                        ticks: { color: 'rgba(255, 255, 255, 0.5)' },
+                        min: yAxisMin,
+                        max: yAxisMax
+                    }
+                }
+            }
+        });
+    } else {
+        // Update efficiently
+        hourlyChartInstance.config.type = chartType;
+        hourlyChartInstance.data.labels = labels;
+        const dataset = hourlyChartInstance.data.datasets[0];
+        
+        dataset.label = tooltipTitle;
+        dataset.data = data;
+        dataset.borderColor = borderColor;
+        dataset.backgroundColor = backgroundColor;
+        dataset.borderWidth = borderWidth;
+        dataset.tension = tension;
+        dataset.pointRadius = chartType === 'line' ? pointRadius : 0;
+        dataset.pointHoverRadius = chartType === 'line' ? pointHoverRadius : 0;
+        dataset.fill = fill;
+        dataset.borderRadius = chartType === 'bar' ? 4 : 0;
+
+        hourlyChartInstance.options.scales.y.min = yAxisMin;
+        hourlyChartInstance.options.scales.y.max = yAxisMax;
+        hourlyChartInstance.options.plugins.tooltip.callbacks.label = function(context) {
+            return ` ${context.raw}${tooltipSuffix}`;
+        };
+        
+        hourlyChartInstance.update();
+    }
 }
 
 function renderDailyForecast(dailyData) {
@@ -371,6 +522,19 @@ export function initDashboardController() {
                     ...currentState, 
                     ui: { ...currentState.ui, selectedHourlyMetric: metric } 
                 });
+            }
+        });
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.addEventListener('transitionend', (e) => {
+            // Only react to the main layout transition
+            if (e.propertyName === 'width' || e.propertyName === 'max-width' || e.propertyName === 'min-width' || e.propertyName === 'flex-basis') {
+                if (hourlyChartInstance) {
+                    hourlyChartInstance.resize();
+                    hourlyChartInstance.update('none');
+                }
             }
         });
     }

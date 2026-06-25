@@ -315,10 +315,9 @@
                                 </div>
                                 
                                 <div class="chart-container flex-col">
-                                    <div style="flex-grow: 1; min-height: 0; position: relative;">
-                                        <!-- Chart Placeholder -->
-                                        <div id="hourly-chart" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; border-bottom: 2px dashed rgba(255,255,255,0.2);"></div>
-                                    </div>
+            <div style="flex-grow: 1; position: relative; width: 100%;">
+                <canvas id="hourly-chart"></canvas>
+            </div>
                                     
                                     <div style="overflow-x: auto; padding-bottom: 0.5rem;" class="custom-scrollbar">
                                         <div id="hourly-forecast-container" class="hourly-timeline"></div>
@@ -500,6 +499,7 @@
     <!-- Notification System -->
     <div id="toast-container" class="toast-container" aria-live="assertive"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
     <script type="module" src="js/ui.js"></script>
 </body>
 </html>

@@ -559,7 +559,7 @@ body.onboarding-mode .dashboard-grid {
 .chart-container {
   flex-grow: 1;
   position: relative;
-  min-height: 0;
+  min-height: clamp(140px, -57px + 14.4vw, 220px);
 }
 
 .hourly-timeline {

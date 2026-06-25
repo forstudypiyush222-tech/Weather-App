@@ -197,6 +197,13 @@ a {
   flex-shrink: 0;
   overflow-x: hidden;
   transition: width 0.3s ease-in-out;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .sidebar.collapsed {

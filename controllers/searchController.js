@@ -4,7 +4,7 @@
  */
 
 import { store } from '../data/store.js';
-import { fetchWeatherByCity, searchCities } from '../services/weatherService.js';
+import { fetchWeatherByCity, fetchWeatherByCoordinates, searchCities } from '../services/weatherService.js';
 import { normalizeWeatherPayload } from '../services/normalizationService.js';
 
 const DOM = {
@@ -98,6 +98,7 @@ export async function selectCity(cityString) {
     try {
         const rawData = await fetchWeatherByCity(cityString);
         const normalizedData = normalizeWeatherPayload(rawData);
+        localStorage.setItem('lastCity', cityString);
         store.setState({ ...normalizedData, loading: false });
     } catch (error) {
         console.error('Weather fetch failed:', error);
@@ -117,5 +118,111 @@ export function initSearchController() {
         DOM.searchInput.addEventListener('keypress', handleSearchSubmit);
     } else {
         console.warn('SearchController: search-input missing from DOM');
+    }
+
+    const allowBtn = document.getElementById('geo-allow-btn');
+    const skipBtn = document.getElementById('geo-skip-btn');
+    const locateBtn = document.getElementById('locate-me-btn');
+    const onboarding = document.getElementById('geo-onboarding');
+
+    if (allowBtn) {
+        allowBtn.addEventListener('click', () => {
+            localStorage.setItem('aether_geo_preference', 'accepted');
+            if (onboarding) {
+                onboarding.classList.add('onboarding-exit');
+                document.body.classList.remove('onboarding-mode');
+                setTimeout(() => onboarding.classList.add('hidden'), 300);
+            }
+            fetchCurrentLocation();
+        });
+    }
+
+    if (skipBtn) {
+        skipBtn.addEventListener('click', () => {
+            localStorage.setItem('aether_geo_preference', 'declined');
+            if (onboarding) {
+                onboarding.classList.add('onboarding-exit');
+                document.body.classList.remove('onboarding-mode');
+                setTimeout(() => onboarding.classList.add('hidden'), 300);
+            }
+            selectCity(localStorage.getItem('lastCity') || 'London');
+        });
+    }
+
+    if (locateBtn) {
+        locateBtn.addEventListener('click', fetchCurrentLocation);
+    }
+}
+
+export async function fetchCurrentLocation() {
+    if (isFetching) return;
+    
+    isFetching = true;
+    if (DOM.searchInput) DOM.searchInput.disabled = true;
+    store.setState({ loading: true, error: null });
+
+    try {
+        const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+        });
+
+        const { latitude, longitude } = position.coords;
+        const rawData = await fetchWeatherByCoordinates(latitude, longitude);
+        const normalizedData = normalizeWeatherPayload(rawData);
+        
+        // Save the location string as lastCity so it restores nicely if geolocation is unavailable later
+        if (normalizedData.location && normalizedData.location.city) {
+            localStorage.setItem('lastCity', normalizedData.location.city);
+        }
+        
+        store.setState({ ...normalizedData, loading: false });
+    } catch (error) {
+        console.warn('Geolocation failed or timed out:', error);
+        store.setState({ 
+            error: 'Unable to determine your location. Showing your saved city instead.',
+            loading: false 
+        });
+        
+        const lastCity = localStorage.getItem('lastCity') || 'London';
+        // Delay slightly to let the error toast be seen, then fallback
+        setTimeout(() => {
+            isFetching = false;
+            selectCity(lastCity);
+        }, 100);
+    } finally {
+        if (!store.getState().error) {
+            isFetching = false;
+        }
+        if (DOM.searchInput) DOM.searchInput.disabled = false;
+    }
+}
+
+export async function bootApp() {
+    const preference = localStorage.getItem('aether_geo_preference');
+    const lastCity = localStorage.getItem('lastCity') || 'London';
+
+    // Fast-path for returning users who previously accepted
+    if (preference === 'accepted') {
+        try {
+            const status = await navigator.permissions.query({ name: 'geolocation' });
+            if (status.state === 'granted') {
+                fetchCurrentLocation();
+                return;
+            }
+        } catch(e) {
+            console.warn('Permissions query failed', e);
+        }
+        // Fallback if permissions lost or errored
+        selectCity(lastCity);
+    } else if (preference === 'declined') {
+        // Declined preference -> Load last city immediately
+        selectCity(lastCity);
+    } else {
+        // No preference -> Show onboarding. Do NOT load any weather.
+        const onboarding = document.getElementById('geo-onboarding');
+        if (onboarding) {
+            document.body.classList.add('onboarding-mode');
+            onboarding.classList.remove('hidden');
+        }
     }
 }

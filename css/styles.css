@@ -417,6 +417,13 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-gutter);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+body.onboarding-mode .dashboard-grid {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Grid Layout */
@@ -823,5 +830,96 @@ a {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+
+/* ==========================================
+   Geolocation Onboarding
+   ========================================== */
+.onboarding-card {
+  position: absolute;
+  top: calc(100% + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 280px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  animation: onboard-slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.onboarding-card.onboarding-exit {
+  animation: onboard-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.onboarding-card.hidden {
+  display: none;
+}
+
+@keyframes onboard-slide-down {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes onboard-slide-up {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-on-surface);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-text {
+  background: transparent;
+  color: var(--color-on-surface-variant);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.btn-text:hover {
+  color: var(--color-on-surface);
 }
 

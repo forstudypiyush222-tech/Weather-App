@@ -137,12 +137,28 @@
                     <!-- Future logo area -->
                 </div>
                 
-                <div class="search-container" id="search-container">
-                    <div class="glass-panel search-box" style="padding: 0.5rem 1rem;">
-                        <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
-                        <input id="search-input" type="text" placeholder="Search cities..." autocomplete="off" style="background: none; border: none; color: white; outline: none; font-family: var(--font-body); width: 250px;" />
-                    </div>
-                </div>
+                                <div id="search-container" class="search-container">
+                            <div class="glass-panel search-box flex-row align-center gap-3" style="padding: 0.5rem 1rem;">
+                                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
+                                <input type="text" id="search-input" class="text-body-lg" placeholder="Search city..." autocomplete="off" style="flex: 1; background: none; border: none; color: var(--color-on-surface); outline: none;">
+                                <button id="locate-me-btn" class="icon-btn text-on-surface-variant" title="Current Location">
+                                    <span class="material-symbols-outlined" style="font-size: 20px;">my_location</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Geolocation Onboarding Card -->
+                            <div id="geo-onboarding" class="glass-panel onboarding-card hidden">
+                                <div class="flex-col align-center text-center gap-2">
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">location_on</span>
+                                    <h2 class="text-body-md font-bold" style="margin: 0;">Use current location?</h2>
+                                    <p class="text-body-md text-on-surface-variant" style="margin: 0; font-size: 13px;">Get weather and air quality for where you are right now.</p>
+                                    <div class="flex-row justify-center gap-2" style="width: 100%; margin-top: 0.5rem;">
+                                        <button id="geo-skip-btn" class="btn-text text-body-md" style="flex: 1;">Later</button>
+                                        <button id="geo-allow-btn" class="btn-primary text-body-md" style="flex: 1;">Allow</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                 <div class="app-bar-right">
                     <button class="glass-panel profile-btn" id="profile-button">

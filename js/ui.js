@@ -4,7 +4,7 @@
  */
 
 import { initDashboardController } from '../controllers/dashboardController.js';
-import { initSearchController, selectCity } from '../controllers/searchController.js';
+import { initSearchController, bootApp } from '../controllers/searchController.js';
 import { initThemeController } from '../controllers/themeController.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initThemeController();
     initSearchController();
     
-    // Load Default City
-    selectCity('London');
+    // Boot the application (handles Geolocation onboarding and lastCity persistence)
+    bootApp();
 
     
     // --- 1. Sidebar Toggle Logic ---

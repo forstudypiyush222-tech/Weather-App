@@ -233,6 +233,7 @@ export function initSearchController() {
                 document.body.classList.remove('onboarding-mode');
                 setTimeout(() => onboarding.classList.add('hidden'), 300);
             }
+            if (DOM.searchInput) DOM.searchInput.focus();
             fetchCurrentLocation();
         });
     }
@@ -245,6 +246,7 @@ export function initSearchController() {
                 document.body.classList.remove('onboarding-mode');
                 setTimeout(() => onboarding.classList.add('hidden'), 300);
             }
+            if (DOM.searchInput) DOM.searchInput.focus();
             selectCity(localStorage.getItem('lastCity') || 'London');
         });
     }
@@ -320,9 +322,11 @@ export async function bootApp() {
     } else {
         // No preference -> Show onboarding. Do NOT load any weather.
         const onboarding = document.getElementById('geo-onboarding');
+        const allowBtn = document.getElementById('geo-allow-btn');
         if (onboarding) {
             document.body.classList.add('onboarding-mode');
             onboarding.classList.remove('hidden');
+            if (allowBtn) allowBtn.focus();
         }
     }
 }

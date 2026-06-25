@@ -26,71 +26,73 @@
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar">
             <div class="brand-area">
-                <button class="sidebar-toggle-btn" id="sidebar-toggle">
-                    <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
+                <button class="sidebar-toggle-btn" id="sidebar-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle Sidebar">
+                    <span class="material-symbols-outlined" style="font-size: 24px;" aria-hidden="true">menu</span>
                 </button>
                 <div class="sidebar-label">
-                    <span class="material-symbols-outlined text-primary" style="font-size: 28px; font-variation-settings: 'FILL' 1;">routine</span>
+                    <span class="material-symbols-outlined text-primary" style="font-size: 28px; font-variation-settings: 'FILL' 1;" aria-hidden="true">routine</span>
                     <span class="text-headline-md font-bold tracking-wider">Aether</span>
                 </div>
             </div>
 
-            <ul class="nav-menu">
-                <li>
-                    <a class="nav-item active" href="#" title="Current">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span>
-                        <span class="sidebar-label text-body-md font-medium">Current</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-item" href="#" title="Hourly">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">schedule</span>
-                        <span class="sidebar-label text-body-md font-medium">Hourly</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-item" href="#" title="Daily">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">calendar_month</span>
-                        <span class="sidebar-label text-body-md font-medium">Daily</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-item" href="#" title="Radar">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">satellite_alt</span>
-                        <span class="sidebar-label text-body-md font-medium">Radar</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-item" href="#" title="Map">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">map</span>
-                        <span class="sidebar-label text-body-md font-medium">Map</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-item" href="#" title="Air Quality">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">air</span>
-                        <span class="sidebar-label text-body-md font-medium">Air Quality</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-item" href="#" title="Sun & Moon">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">brightness_4</span>
-                        <span class="sidebar-label text-body-md font-medium">Sun & Moon</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-item" href="#" title="Alerts">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">warning</span>
-                        <span class="sidebar-label text-body-md font-medium">Alerts</span>
-                    </a>
-                </li>
-            </ul>
+            <nav aria-label="Main Navigation">
+                <ul class="nav-menu">
+                    <li>
+                        <a class="nav-item active" href="#" title="Current">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">dashboard</span>
+                            <span class="sidebar-label text-body-md font-medium">Current</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" href="#" title="Hourly">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">schedule</span>
+                            <span class="sidebar-label text-body-md font-medium">Hourly</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" href="#" title="Daily">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">calendar_month</span>
+                            <span class="sidebar-label text-body-md font-medium">Daily</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" href="#" title="Radar">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">satellite_alt</span>
+                            <span class="sidebar-label text-body-md font-medium">Radar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" href="#" title="Map">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">map</span>
+                            <span class="sidebar-label text-body-md font-medium">Map</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" href="#" title="Air Quality">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">air</span>
+                            <span class="sidebar-label text-body-md font-medium">Air Quality</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" href="#" title="Sun & Moon">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">brightness_4</span>
+                            <span class="sidebar-label text-body-md font-medium">Sun & Moon</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" href="#" title="Alerts">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">warning</span>
+                            <span class="sidebar-label text-body-md font-medium">Alerts</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
 
             <div class="sidebar-footer">
                 <div class="glass-panel sidebar-location-card">
                     <div class="flex-col gap-1">
                         <div class="flex-row align-center gap-2 text-primary">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">location_on</span>
+                            <span class="material-symbols-outlined" style="font-size: 18px;" aria-hidden="true">location_on</span>
                             <span class="text-label-caps">Location</span>
                         </div>
                         <div class="flex-col" style="margin-left: 1.75rem;">
@@ -106,7 +108,7 @@
 
                     <div class="flex-row align-center gap-4" style="margin-left: 1.75rem;">
                         <div class="hero-icon-box" style="width: 2.5rem; height: 2.5rem;">
-                            <span id="sidebar-weather-icon" class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;">cloud</span>
+                            <span id="sidebar-weather-icon" class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1; font-size: 20px;" aria-hidden="true">cloud</span>
                         </div>
                         <div class="flex-col">
                             <span id="sidebar-temperature" class="text-headline-md font-bold" style="line-height: 1;">--°</span>
@@ -114,21 +116,23 @@
                         </div>
                     </div>
 
-                    <button class="search-btn">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+                    <button class="search-btn" aria-label="Search for a city">
+                        <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">search</span>
                         <span class="text-body-md font-medium">Search City</span>
                     </button>
                 </div>
             </div>
 
-            <ul class="nav-menu" style="flex-grow: 0; margin-top: 1rem;">
-                <li>
-                    <a class="nav-item" href="#" title="Settings">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
-                        <span class="sidebar-label text-body-md font-medium">Settings</span>
-                    </a>
-                </li>
-            </ul>
+            <nav aria-label="Settings Navigation">
+                <ul class="nav-menu" style="flex-grow: 0; margin-top: 1rem;">
+                    <li>
+                        <a class="nav-item" href="#" title="Settings">
+                            <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">settings</span>
+                            <span class="sidebar-label text-body-md font-medium">Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </aside>
 
         <!-- Main Content Area -->
@@ -141,29 +145,29 @@
                 
                                 <div id="search-container" class="search-container">
                             <div class="glass-panel search-box flex-row align-center gap-3" style="padding: 0.5rem 1rem;">
-                                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">search</span>
+                                <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;" aria-hidden="true">search</span>
                                 <input type="text" id="search-input" class="text-body-lg" placeholder="Search city..." autocomplete="off" style="flex: 1; background: none; border: none; color: var(--color-on-surface); outline: none;" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-dropdown-list">
-                                <button id="locate-me-btn" class="icon-btn text-on-surface-variant" title="Current Location">
-                                    <span class="material-symbols-outlined" style="font-size: 20px;">my_location</span>
+                                <button id="locate-me-btn" class="icon-btn text-on-surface-variant" aria-label="Use Current Location">
+                                    <span class="material-symbols-outlined" style="font-size: 20px;" aria-hidden="true">my_location</span>
                                 </button>
                             </div>
                             
                             <!-- Geolocation Onboarding Card -->
-                            <div id="geo-onboarding" class="glass-panel onboarding-card hidden">
+                            <div id="geo-onboarding" class="glass-panel onboarding-card hidden" role="dialog" aria-labelledby="onboarding-title" aria-describedby="onboarding-desc">
                                 <div class="flex-col align-center text-center gap-2">
-                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">location_on</span>
-                                    <h2 class="text-body-md font-bold" style="margin: 0;">Use current location?</h2>
-                                    <p class="text-body-md text-on-surface-variant" style="margin: 0; font-size: 13px;">Get weather and air quality for where you are right now.</p>
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;" aria-hidden="true">location_on</span>
+                                    <h2 id="onboarding-title" class="text-body-md font-bold" style="margin: 0;">Use current location?</h2>
+                                    <p id="onboarding-desc" class="text-body-md text-on-surface-variant" style="margin: 0; font-size: 13px;">Get weather and air quality for where you are right now.</p>
                                     <div class="flex-row justify-center gap-2" style="width: 100%; margin-top: 0.5rem;">
-                                        <button id="geo-skip-btn" class="btn-text text-body-md" style="flex: 1;">Later</button>
-                                        <button id="geo-allow-btn" class="btn-primary text-body-md" style="flex: 1;">Allow</button>
+                                        <button id="geo-skip-btn" class="btn-text text-body-md" style="flex: 1;" aria-label="Dismiss geolocation setup">Later</button>
+                                        <button id="geo-allow-btn" class="btn-primary text-body-md" style="flex: 1;" aria-label="Allow geolocation access">Allow</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                 <div class="app-bar-right">
-                    <button class="glass-panel profile-btn" id="profile-button">
+                    <button class="glass-panel profile-btn" id="profile-button" aria-expanded="false" aria-label="User Profile">
                         <span class="text-body-md text-on-surface-variant">User Profile</span>
                         <div class="avatar">
                             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlImD_shffG2-pKbFgdRuQUtV4JR1Zzwh6gziqaLadITf47jjDRrH6bP4LqM-wQaG-9PFtt5ZSFAku_FSSG9889RLJiXViH6_DfjbdlRQbfYS2_SQv0fYSi4eCb4Hw_9D1hvFHH2NmIfqf_kU7lB250E0edRWMBjIVBHO1dZM-4GRuWDy0khc6Gg0PLm1RkqKqIRmQafqVCQyehiTTgoDCC5LIngorlX_uqnIEW4Jmm_DKpWYkmqW6D0YT2o0_vtxuqHLOb9eZuuA" alt="Avatar">
@@ -196,41 +200,41 @@
                             
                             <div class="flex-row align-center gap-4" style="margin-bottom: 1rem;">
                                 <div class="hero-icon-box">
-                                    <span id="hero-weather-icon" class="material-symbols-outlined text-secondary" style="font-size: 24px; font-variation-settings: 'FILL' 1;">cloud</span>
+                                    <span id="hero-weather-icon" class="material-symbols-outlined text-secondary" style="font-size: 24px; font-variation-settings: 'FILL' 1;" aria-hidden="true">cloud</span>
                                 </div>
                                 <h2 id="hero-condition" class="text-headline-lg font-bold">--</h2>
                             </div>
                             
                             <div class="flex-row align-center gap-2 text-on-surface-variant text-body-md" style="margin-bottom: 2rem;">
-                                <span class="material-symbols-outlined" style="font-size: 14px;">location_on</span>
+                                <span class="material-symbols-outlined" style="font-size: 14px;" aria-hidden="true">location_on</span>
                                 <span id="hero-location">--</span>
-                                <span class="material-symbols-outlined" style="font-size: 14px;">near_me</span>
+                                <span class="material-symbols-outlined" style="font-size: 14px;" aria-hidden="true">near_me</span>
                             </div>
                             
                             <div class="hero-mini-cards">
                                 <div class="glass-panel mini-card">
-                                    <span class="material-symbols-outlined text-error" style="font-size: 14px;">arrow_upward</span>
+                                    <span class="material-symbols-outlined text-error" style="font-size: 14px;" aria-hidden="true">arrow_upward</span>
                                     <div class="flex-col">
                                         <span id="hero-max-temp" class="text-data-point">--°</span>
                                         <span class="text-label-caps text-on-surface-variant">Max</span>
                                     </div>
                                 </div>
                                 <div class="glass-panel mini-card">
-                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">arrow_downward</span>
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;" aria-hidden="true">arrow_downward</span>
                                     <div class="flex-col">
                                         <span id="hero-min-temp" class="text-data-point">--°</span>
                                         <span class="text-label-caps text-on-surface-variant">Min</span>
                                     </div>
                                 </div>
                                 <div class="glass-panel mini-card">
-                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">water_drop</span>
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;" aria-hidden="true">water_drop</span>
                                     <div class="flex-col">
                                         <span id="hero-rain-probability" class="text-data-point">--%</span>
                                         <span class="text-label-caps text-on-surface-variant">Rain</span>
                                     </div>
                                 </div>
                                 <div class="glass-panel mini-card">
-                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 14px;">air</span>
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 14px;" aria-hidden="true">air</span>
                                     <div class="flex-col">
                                         <span id="hero-wind" class="text-data-point">-- km/h</span>
                                         <span class="text-label-caps text-on-surface-variant">Wind</span>
@@ -251,7 +255,7 @@
 
                                 <div class="flex-row align-center gap-6" style="margin-bottom: 2rem;">
                                     <div style="width: 4rem; height: 4rem; position: relative; flex-shrink: 0;">
-                                        <span id="summary-icon" class="material-symbols-outlined text-tertiary" style="font-size: 64px; font-variation-settings: 'FILL' 1; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">cloud</span>
+                                        <span id="summary-icon" class="material-symbols-outlined text-tertiary" style="font-size: 64px; font-variation-settings: 'FILL' 1; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;" aria-hidden="true">cloud</span>
                                     </div>
                                     <div>
                                         <p id="summary-condition" class="text-body-lg font-medium">--</p>
@@ -262,35 +266,35 @@
                                 <div class="summary-list">
                                     <div class="summary-list-item">
                                         <div class="flex-row align-center gap-3 text-on-surface-variant">
-                                            <span class="material-symbols-outlined" style="font-size: 14px;">device_thermostat</span>
+                                            <span class="material-symbols-outlined" style="font-size: 14px;" aria-hidden="true">device_thermostat</span>
                                             <span class="text-body-md">Max Temperature</span>
                                         </div>
                                         <span id="summary-max-temp" class="text-data-point">--°</span>
                                     </div>
                                     <div class="summary-list-item">
                                         <div class="flex-row align-center gap-3 text-on-surface-variant">
-                                            <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">device_thermostat</span>
+                                            <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;" aria-hidden="true">device_thermostat</span>
                                             <span class="text-body-md">Min Temperature</span>
                                         </div>
                                         <span id="summary-min-temp" class="text-data-point">--°</span>
                                     </div>
                                     <div class="summary-list-item">
                                         <div class="flex-row align-center gap-3 text-on-surface-variant">
-                                            <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;">water_drop</span>
+                                            <span class="material-symbols-outlined text-tertiary" style="font-size: 14px;" aria-hidden="true">water_drop</span>
                                             <span class="text-body-md">Rain Probability</span>
                                         </div>
                                         <span id="summary-rain" class="text-data-point">--%</span>
                                     </div>
                                     <div class="summary-list-item">
                                         <div class="flex-row align-center gap-3 text-on-surface-variant">
-                                            <span class="material-symbols-outlined" style="font-size: 14px;">air</span>
+                                            <span class="material-symbols-outlined" style="font-size: 14px;" aria-hidden="true">air</span>
                                             <span class="text-body-md">Wind</span>
                                         </div>
                                         <span id="summary-wind" class="text-data-point">-- km/h</span>
                                     </div>
                                     <div class="summary-list-item">
                                         <div class="flex-row align-center gap-3 text-on-surface-variant">
-                                            <span class="material-symbols-outlined" style="font-size: 14px;">wb_sunny</span>
+                                            <span class="material-symbols-outlined" style="font-size: 14px;" aria-hidden="true">wb_sunny</span>
                                             <span class="text-body-md">UV Index</span>
                                         </div>
                                         <span id="summary-uv" class="text-data-point">--</span>
@@ -299,7 +303,7 @@
 
                                 <button class="btn-outline">
                                     <span class="text-body-md">View full details</span>
-                                    <span class="material-symbols-outlined" style="font-size: 14px;">chevron_right</span>
+                                    <span class="material-symbols-outlined" style="font-size: 14px;" aria-hidden="true">chevron_right</span>
                                 </button>
                             </div>
                         </section>
@@ -326,10 +330,10 @@
                                     </div>
                                 </div>
                                 
-                                <div id="hourly-metric-toggles" class="toggle-group custom-scrollbar">
-                                    <button class="text-label-caps toggle-btn active" data-metric="temp">Temp.</button>
-                                    <button class="text-label-caps toggle-btn" data-metric="precipitation">Precipitation</button>
-                                    <button class="text-label-caps toggle-btn" data-metric="wind">Wind</button>
+                                <div id="hourly-metric-toggles" class="toggle-group custom-scrollbar" role="group" aria-label="Hourly metric selection">
+                                    <button class="text-label-caps toggle-btn active" data-metric="temp" aria-pressed="true">Temp.</button>
+                                    <button class="text-label-caps toggle-btn" data-metric="precipitation" aria-pressed="false">Precipitation</button>
+                                    <button class="text-label-caps toggle-btn" data-metric="wind" aria-pressed="false">Wind</button>
                                 </div>
                             </div>
                         </section>
@@ -394,7 +398,7 @@
                             <div class="metrics-container">
                                 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;">device_thermostat</span>
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;" aria-hidden="true">device_thermostat</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Feels Like</span>
                                         <span id="metric-feels-like" class="text-data-point">--°</span>
@@ -402,7 +406,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;">humidity_percentage</span>
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;" aria-hidden="true">humidity_percentage</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Humidity</span>
                                         <span id="metric-humidity" class="text-data-point">--%</span>
@@ -410,7 +414,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">air</span>
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;" aria-hidden="true">air</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Wind</span>
                                         <span id="metric-wind" class="text-data-point">-- km/h</span>
@@ -418,7 +422,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">speed</span>
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;" aria-hidden="true">speed</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Pressure</span>
                                         <span id="metric-pressure" class="text-data-point">-- hPa</span>
@@ -426,7 +430,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">visibility</span>
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;" aria-hidden="true">visibility</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Visibility</span>
                                         <span id="metric-visibility" class="text-data-point">-- km</span>
@@ -434,7 +438,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">cloud</span>
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;" aria-hidden="true">cloud</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Clouds</span>
                                         <span id="metric-cloud-cover" class="text-data-point">--%</span>
@@ -442,7 +446,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;">water_drop</span>
+                                    <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;" aria-hidden="true">water_drop</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Dew Point</span>
                                         <span id="metric-dew-point" class="text-data-point">--°</span>
@@ -450,7 +454,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">brightness_low</span>
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;" aria-hidden="true">brightness_low</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">UV Index</span>
                                         <span id="metric-uv" class="text-data-point">--</span>
@@ -458,7 +462,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">wb_sunny</span>
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;" aria-hidden="true">wb_sunny</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Sunrise</span>
                                         <span id="metric-sunrise" class="text-data-point">--:--</span>
@@ -466,7 +470,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;">nightlight_round</span>
+                                    <span class="material-symbols-outlined text-secondary" style="font-size: 24px;" aria-hidden="true">nightlight_round</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Sunset</span>
                                         <span id="metric-sunset" class="text-data-point">--:--</span>
@@ -474,7 +478,7 @@
                                 </div>
 
                                 <div class="metric-item">
-                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;">brightness_2</span>
+                                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 24px;" aria-hidden="true">brightness_2</span>
                                     <div class="flex-col">
                                         <span class="text-label-caps text-on-surface-variant" style="font-size: 10px;">Moon</span>
                                         <span id="metric-moon-phase" class="text-data-point">--</span>
@@ -499,7 +503,7 @@
     </div>
 
     <!-- Notification System -->
-    <div id="toast-container" class="toast-container"></div>
+    <div id="toast-container" class="toast-container" aria-live="assertive"></div>
 
     <script type="module" src="js/ui.js"></script>
 </body>

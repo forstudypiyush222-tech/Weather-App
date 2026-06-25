@@ -937,3 +937,21 @@ body.onboarding-mode .dashboard-grid {
   color: var(--color-on-surface);
 }
 
+/* --- Accessibility & Focus Management --- */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[role="option"]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* --- Reduced Motion Support --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

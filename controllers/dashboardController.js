@@ -93,6 +93,7 @@ function showErrorToast(errorMessage) {
     const toast = document.createElement('div');
     toast.className = 'glass-panel toast-message text-on-surface';
     toast.style.borderLeft = '4px solid var(--color-error)';
+    toast.setAttribute('role', 'alert');
     
     toast.innerHTML = `
         <span class="material-symbols-outlined text-error" style="font-size: 24px;">error</span>

@@ -87,17 +87,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }, { passive: false });
         }
     });
-
-    // --- 5. Hourly Forecast Chart Placeholder Animation ---
-    // Prepare canvas context for future Chart.js or D3.js integration
-    const hourlyToggleBtns = document.querySelectorAll('.toggle-btn');
-    hourlyToggleBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            // Remove active class from all
-            hourlyToggleBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked
-            e.target.classList.add('active');
-            console.log(`Switched hourly forecast view to: ${e.target.textContent}`);
-        });
-    });
 });

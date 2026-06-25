@@ -138,8 +138,8 @@ function handleStateChange(state) {
         renderSidebar(state.current, state.location);
     }
     
-    if (state.hourly) {
-        renderHourlyForecast(state.hourly);
+    if (state.hourly && state.ui) {
+        renderHourlyForecast(state.hourly, state.ui.selectedHourlyMetric);
     }
     
     if (state.daily && state.daily.length > 0) {
@@ -219,7 +219,17 @@ function renderSummary(todayDaily, current) {
     setText(DOM.summarySecondary, 'Current Conditions'); 
 }
 
-function renderHourlyForecast(hourlyData) {
+function renderHourlyForecast(hourlyData, selectedMetric = 'temp') {
+    // Sync toggle active states
+    const toggleBtns = document.querySelectorAll('#hourly-metric-toggles .toggle-btn');
+    toggleBtns.forEach(btn => {
+        if (btn.getAttribute('data-metric') === selectedMetric) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
     if (!DOM.hourlyContainer) return;
     DOM.hourlyContainer.innerHTML = '';
     
@@ -227,7 +237,22 @@ function renderHourlyForecast(hourlyData) {
         const item = document.createElement('div');
         item.className = 'hourly-item';
         
-        const tempText = Number.isFinite(hour.temperature) ? `${Math.round(hour.temperature)}°` : '--°';
+        let valueText = '--';
+        let iconName = hour.icon || 'cloud';
+        let iconColor = 'text-on-surface-variant';
+        
+        if (selectedMetric === 'temp') {
+            valueText = Number.isFinite(hour.temperature) ? `${Math.round(hour.temperature)}°` : '--°';
+            iconColor = 'text-on-surface-variant';
+        } else if (selectedMetric === 'precipitation') {
+            valueText = Number.isFinite(hour.rainChance) ? `${hour.rainChance}%` : '--%';
+            iconName = 'water_drop';
+            iconColor = 'text-tertiary';
+        } else if (selectedMetric === 'wind') {
+            valueText = Number.isFinite(hour.windSpeed) ? `${Math.round(hour.windSpeed)} km/h` : '-- km/h';
+            iconName = 'air';
+            iconColor = 'text-secondary';
+        }
         
         let timeLabel = hour.time || '--:--';
         if (timeLabel.includes(':')) {
@@ -240,8 +265,8 @@ function renderHourlyForecast(hourlyData) {
         }
         
         item.innerHTML = `
-            <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px; font-variation-settings: 'FILL' 1;">${hour.icon || 'cloud'}</span>
-            <span class="text-data-point" style="font-size: 12px;">${tempText}</span>
+            <span class="material-symbols-outlined ${iconColor}" style="font-size: 20px; font-variation-settings: 'FILL' 1;">${iconName}</span>
+            <span class="text-data-point" style="font-size: 12px;">${valueText}</span>
             <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">${timeLabel}</span>
         `;
         DOM.hourlyContainer.appendChild(item);
@@ -331,6 +356,22 @@ export function initDashboardController() {
     
     if (missingIds > 0) {
         console.warn(`DashboardController: ${missingIds} render targets missing, updates will be gracefully skipped.`);
+    }
+
+    const toggleContainer = document.getElementById('hourly-metric-toggles');
+    if (toggleContainer) {
+        toggleContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.toggle-btn');
+            if (!btn) return;
+            const metric = btn.getAttribute('data-metric');
+            const currentState = store.getState();
+            if (currentState.ui.selectedHourlyMetric !== metric) {
+                store.setState({ 
+                    ...currentState, 
+                    ui: { ...currentState.ui, selectedHourlyMetric: metric } 
+                });
+            }
+        });
     }
 
     store.subscribe(handleStateChange);

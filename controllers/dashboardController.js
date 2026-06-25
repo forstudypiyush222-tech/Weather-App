@@ -406,6 +406,132 @@ const externalTooltipHandler = (context) => {
     tooltipNodes.root.classList.add('visible');
 };
 
+const interactiveCrosshairPlugin = {
+    id: 'interactiveCrosshair',
+    afterEvent(chart, args) {
+        const { event } = args;
+        const elements = chart.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
+        
+        if (event.type === 'mousemove' && elements && elements.length > 0) {
+            const activeIndex = elements[0].index;
+            
+            if (chart.pluginActiveIndex !== activeIndex) {
+                const timelineItems = document.querySelectorAll('#hourly-forecast-container .hourly-item');
+                
+                if (chart.pluginActiveIndex !== undefined && timelineItems[chart.pluginActiveIndex]) {
+                    timelineItems[chart.pluginActiveIndex].classList.remove('active');
+                }
+                
+                if (timelineItems[activeIndex]) {
+                    timelineItems[activeIndex].classList.add('active');
+                }
+                
+                chart.pluginActiveIndex = activeIndex;
+                chart.isHovering = true;
+            }
+        } else if (event.type === 'mouseout') {
+            if (chart.pluginActiveIndex !== undefined) {
+                const timelineItems = document.querySelectorAll('#hourly-forecast-container .hourly-item');
+                if (timelineItems[chart.pluginActiveIndex]) {
+                    timelineItems[chart.pluginActiveIndex].classList.remove('active');
+                }
+            }
+            chart.pluginActiveIndex = undefined;
+            chart.isHovering = false;
+        }
+    },
+    beforeDatasetsDraw(chart) {
+        if (!chart.isHovering || chart.pluginActiveIndex === undefined) return;
+
+        const ctx = chart.ctx;
+        const tooltip = chart.tooltip;
+        
+        const x = tooltip && tooltip.opacity > 0 ? tooltip.caretX : chart.getDatasetMeta(0).data[chart.pluginActiveIndex].x;
+        
+        const topY = chart.chartArea.top;
+        const bottomY = chart.chartArea.bottom;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, topY);
+        ctx.lineTo(x, bottomY);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.stroke();
+        ctx.restore();
+        
+        // Dim native dataset
+        ctx.globalAlpha = 0.5;
+    },
+    afterDatasetsDraw(chart) {
+        if (!chart.isHovering || chart.pluginActiveIndex === undefined) return;
+        
+        const ctx = chart.ctx;
+        ctx.globalAlpha = 1.0; // Restore alpha
+        
+        const tooltip = chart.tooltip;
+        const x = tooltip && tooltip.opacity > 0 ? tooltip.caretX : chart.getDatasetMeta(0).data[chart.pluginActiveIndex].x;
+        const y = tooltip && tooltip.opacity > 0 ? tooltip.caretY : chart.getDatasetMeta(0).data[chart.pluginActiveIndex].y;
+        
+        const borderColor = chart.data.datasets[0].borderColor || '#00d4ff';
+        
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = borderColor;
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, 2 * Math.PI);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = borderColor;
+        ctx.stroke();
+        ctx.restore();
+    },
+    afterDraw(chart) {
+        if (!chart.isHovering || chart.pluginActiveIndex === undefined) return;
+        
+        const ctx = chart.ctx;
+        const tooltip = chart.tooltip;
+        const x = tooltip && tooltip.opacity > 0 ? tooltip.caretX : chart.getDatasetMeta(0).data[chart.pluginActiveIndex].x;
+        const bottomY = chart.chartArea.bottom;
+        
+        const label = chart.data.labels[chart.pluginActiveIndex];
+        
+        ctx.save();
+        ctx.font = '12px system-ui, -apple-system, sans-serif';
+        const textWidth = ctx.measureText(label).width;
+        const pillWidth = textWidth + 16;
+        const pillHeight = 24;
+        
+        let pillX = x - pillWidth / 2;
+        pillX = Math.max(chart.chartArea.left, Math.min(pillX, chart.chartArea.right - pillWidth));
+        
+        ctx.fillStyle = 'rgba(23, 31, 51, 0.8)';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 4;
+        
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(pillX, bottomY - pillHeight, pillWidth, pillHeight, 12);
+        } else {
+            // Fallback for older browsers
+            ctx.rect(pillX, bottomY - pillHeight, pillWidth, pillHeight);
+        }
+        ctx.fill();
+        
+        ctx.shadowColor = 'transparent';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, pillX + pillWidth / 2, bottomY - pillHeight / 2);
+        ctx.restore();
+    }
+};
+
 function updateHourlyChart(hourlyData, selectedMetric) {
     if (!hourlyData || hourlyData.length === 0) return;
     
@@ -506,8 +632,17 @@ function updateHourlyChart(hourlyData, selectedMetric) {
                     legend: { display: false },
                     tooltip: {
                         enabled: false,
-                        external: externalTooltipHandler
+                        external: externalTooltipHandler,
+                        animation: {
+                            duration: 150
+                        }
                     }
+                },
+                hover: {
+                    animationDuration: 150
+                },
+                animation: {
+                    duration: 400 // initial
                 },
                 scales: {
                     x: {
@@ -520,8 +655,10 @@ function updateHourlyChart(hourlyData, selectedMetric) {
                         min: yAxisMin,
                         max: yAxisMax
                     }
-                }
-            }
+                },
+                plugins: [interactiveCrosshairPlugin]
+            },
+            plugins: [interactiveCrosshairPlugin]
         });
     } else {
         // Update efficiently

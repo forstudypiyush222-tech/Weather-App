@@ -294,6 +294,7 @@ a {
 .sidebar.collapsed .sidebar-footer {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
 }
 
 .sidebar-location-card {

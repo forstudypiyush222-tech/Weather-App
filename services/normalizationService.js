@@ -40,6 +40,34 @@ const AQI_STATUS_MAP = {
     6: { status: 'Hazardous', advisory: 'Health alert: everyone may experience more serious health effects.' }
 };
 
+const ICON_MAP_BY_STATE = {
+    'clear-day': 'wb_sunny',
+    'clear-night': 'dark_mode',
+    'partly-cloudy-day': 'partly_cloudy_day',
+    'partly-cloudy-night': 'partly_cloudy_night',
+    'cloudy-day': 'cloud',
+    'cloudy-night': 'cloud',
+    'rain': 'rainy',
+    'thunderstorm': 'thunderstorm',
+    'snow': 'ac_unit',
+    'fog': 'foggy'
+};
+
+const ICON_MAP_BY_CODE = {
+    1000: 'wb_sunny', 1003: 'partly_cloudy_day', 1006: 'cloud', 1009: 'cloud',
+    1030: 'foggy', 1063: 'rainy', 1066: 'ac_unit', 1069: 'weather_mix',
+    1072: 'weather_mix', 1087: 'thunderstorm', 1114: 'ac_unit', 1117: 'ac_unit',
+    1135: 'foggy', 1148: 'foggy', 1150: 'rainy', 1153: 'rainy',
+    1168: 'weather_mix', 1171: 'weather_mix', 1180: 'rainy', 1183: 'rainy',
+    1186: 'rainy', 1189: 'rainy', 1192: 'rainy_heavy', 1195: 'rainy_heavy',
+    1198: 'weather_mix', 1201: 'weather_mix', 1204: 'weather_mix', 1207: 'weather_mix',
+    1210: 'ac_unit', 1213: 'ac_unit', 1216: 'ac_unit', 1219: 'ac_unit',
+    1222: 'ac_unit', 1225: 'ac_unit', 1237: 'weather_mix', 1240: 'rainy',
+    1243: 'rainy_heavy', 1246: 'rainy_heavy', 1249: 'weather_mix', 1252: 'weather_mix',
+    1255: 'ac_unit', 1258: 'ac_unit', 1261: 'weather_mix', 1264: 'weather_mix',
+    1273: 'thunderstorm', 1276: 'thunderstorm', 1279: 'thunderstorm', 1282: 'thunderstorm'
+};
+
 // ==========================================
 // HELPER FUNCTIONS
 // ==========================================
@@ -85,6 +113,19 @@ function computeExactAQI(airQuality) {
     return { aqiScore: 0, mainPollutant: 'N/A' };
 }
 
+/**
+ * Maps raw WeatherAPI conditions to a valid Material Symbols icon name.
+ */
+function getWeatherIcon(conditionCode, weatherState) {
+    if (weatherState && ICON_MAP_BY_STATE[weatherState]) {
+        return ICON_MAP_BY_STATE[weatherState];
+    }
+    if (conditionCode && ICON_MAP_BY_CODE[conditionCode]) {
+        return ICON_MAP_BY_CODE[conditionCode];
+    }
+    return 'cloud';
+}
+
 // ==========================================
 // EXTRACTION MODULES
 // ==========================================
@@ -105,13 +146,17 @@ function extractLocation(locationData) {
     };
 }
 
-function extractCurrent(currentData) {
+function extractCurrent(currentData, weatherState) {
     if (!currentData) return {};
+    
+    const conditionCode = currentData.condition?.code || 0;
+    
     return {
         temperature: currentData.temp_c ?? 0,
         feelsLike: currentData.feelslike_c ?? 0,
         condition: currentData.condition?.text || '',
-        conditionCode: currentData.condition?.code || 0,
+        conditionCode: conditionCode,
+        icon: getWeatherIcon(conditionCode, weatherState),
         humidity: currentData.humidity ?? 0,
         pressure: currentData.pressure_mb ?? 0,
         visibility: currentData.vis_km ?? 0,
@@ -128,11 +173,17 @@ function extractHourly(forecastData) {
     
     return forecastData.forecastday[0].hour.map(h => {
         const [, time] = (h.time || '').split(' ');
+        const conditionText = h.condition?.text || '';
+        const conditionCode = h.condition?.code || 0;
+        const isDay = h.is_day ?? 1;
+        const { state: hourState } = normalizeWeatherState(conditionText, isDay);
+
         return {
             time: time || '',
             temperature: h.temp_c ?? 0,
-            condition: h.condition?.text || '',
-            conditionCode: h.condition?.code || 0,
+            condition: conditionText,
+            conditionCode: conditionCode,
+            icon: getWeatherIcon(conditionCode, hourState),
             rainChance: h.chance_of_rain ?? 0,
             windSpeed: h.wind_kph ?? 0,
             pressure: h.pressure_mb ?? 0
@@ -159,13 +210,18 @@ function extractDaily(forecastData) {
             }
         }
 
+        const conditionText = d.day?.condition?.text || '';
+        const conditionCode = d.day?.condition?.code || 0;
+        const { state: dayState } = normalizeWeatherState(conditionText, 1); // 1 = force day icon
+
         return {
             day: dayLabel || dateStr, // Weekday label (e.g., "Tue")
             date: dateStr, // Original ISO date string (e.g., "2023-10-24")
             maxTemp: d.day?.maxtemp_c ?? 0,
             minTemp: d.day?.mintemp_c ?? 0,
-            condition: d.day?.condition?.text || '',
-            conditionCode: d.day?.condition?.code || 0,
+            condition: conditionText,
+            conditionCode: conditionCode,
+            icon: getWeatherIcon(conditionCode, dayState),
             rainChance: d.day?.daily_chance_of_rain ?? 0
         };
     });
@@ -217,13 +273,13 @@ export function normalizeWeatherPayload(rawData) {
     }
 
     const location = extractLocation(rawData.location);
-    const current = extractCurrent(rawData.current);
     
     // Resolve Canonical Weather State
     const conditionText = rawData.current?.condition?.text || '';
     const isDay = rawData.current?.is_day ?? 1;
     const { state: weatherState } = normalizeWeatherState(conditionText, isDay);
 
+    const current = extractCurrent(rawData.current, weatherState);
     const hourly = extractHourly(rawData.forecast);
     const daily = extractDaily(rawData.forecast);
     const airQuality = extractAirQuality(rawData.current);

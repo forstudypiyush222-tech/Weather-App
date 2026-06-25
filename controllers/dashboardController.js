@@ -102,7 +102,7 @@ function renderHero(current, location, todayDaily) {
     const country = location.country || '--';
     setText(DOM.heroLocation, `${city}, ${region}, ${country}`);
     
-    setIcon(DOM.heroIcon, current.icon_name || 'cloud'); // (Fallback if missing)
+    setIcon(DOM.heroIcon, current.icon || 'cloud'); // (Fallback if missing)
 
     if (todayDaily) {
         setText(DOM.heroMaxTemp, Number.isFinite(todayDaily.maxTemp) ? `${Math.round(todayDaily.maxTemp)}°` : '--°');
@@ -134,11 +134,11 @@ function renderSidebar(current, location) {
 
     setText(DOM.sidebarTemp, Number.isFinite(current.temperature) ? `${Math.round(current.temperature)}°` : '--°');
     setText(DOM.sidebarCondition, current.condition || '--');
-    setIcon(DOM.sidebarIcon, current.icon_name || 'cloud');
+    setIcon(DOM.sidebarIcon, current.icon || 'cloud');
 }
 
 function renderSummary(todayDaily, current) {
-    setIcon(DOM.summaryIcon, current.icon_name || 'cloud');
+    setIcon(DOM.summaryIcon, current.icon || 'cloud');
     setText(DOM.summaryCondition, current.condition || '--');
     
     const max = todayDaily?.maxTemp;
@@ -169,7 +169,7 @@ function renderHourlyForecast(hourlyData) {
         }
         
         item.innerHTML = `
-            <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px; font-variation-settings: 'FILL' 1;">${hour.icon_name || 'cloud'}</span>
+            <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px; font-variation-settings: 'FILL' 1;">${hour.icon || 'cloud'}</span>
             <span class="text-data-point" style="font-size: 12px;">${tempText}</span>
             <span class="text-label-caps text-on-surface-variant" style="font-size: 10px; margin-top: 0.5rem;">${timeLabel}</span>
         `;
@@ -193,7 +193,7 @@ function renderDailyForecast(dailyData) {
         card.innerHTML = `
             <span class="text-label-caps text-on-surface-variant">${dayLabel}</span>
             <div class="daily-icon-box">
-                <span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 1;">${day.icon_name || 'cloud'}</span>
+                <span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 1;">${day.icon || 'cloud'}</span>
             </div>
             <div class="flex-col align-center">
                 <span class="text-data-point" style="font-size: 14px;">${maxTempText}</span>

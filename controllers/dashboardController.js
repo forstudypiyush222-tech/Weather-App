@@ -278,6 +278,134 @@ function renderHourlyTimeline(hourlyData, selectedMetric = 'temp') {
     });
 }
 
+let tooltipNodes = null;
+
+function initTooltip() {
+    if (tooltipNodes) return;
+    const tooltipEl = document.getElementById('chart-tooltip');
+    if (!tooltipEl) return;
+    
+    tooltipNodes = {
+        root: tooltipEl,
+        icon: tooltipEl.querySelector('.tooltip-icon'),
+        condition: tooltipEl.querySelector('.tooltip-condition'),
+        time: tooltipEl.querySelector('.tooltip-time'),
+        metrics: {
+            temp: {
+                wrapper: tooltipEl.querySelector('.tooltip-metric[data-type="temp"]'),
+                value: tooltipEl.querySelector('.tooltip-metric[data-type="temp"] .metric-value')
+            },
+            feelsLike: {
+                wrapper: tooltipEl.querySelector('.tooltip-metric[data-type="feelsLike"]'),
+                value: tooltipEl.querySelector('.tooltip-metric[data-type="feelsLike"] .metric-value')
+            },
+            rainChance: {
+                wrapper: tooltipEl.querySelector('.tooltip-metric[data-type="rainChance"]'),
+                value: tooltipEl.querySelector('.tooltip-metric[data-type="rainChance"] .metric-value')
+            },
+            windSpeed: {
+                wrapper: tooltipEl.querySelector('.tooltip-metric[data-type="windSpeed"]'),
+                value: tooltipEl.querySelector('.tooltip-metric[data-type="windSpeed"] .metric-value')
+            }
+        }
+    };
+}
+
+const getConditionFromIcon = (icon) => {
+    const map = {
+        'clear_day': 'Sunny',
+        'clear_night': 'Clear',
+        'partly_cloudy_day': 'Partly Cloudy',
+        'partly_cloudy_night': 'Partly Cloudy',
+        'cloudy': 'Cloudy',
+        'rain': 'Rain',
+        'snow': 'Snow',
+        'thunderstorm': 'Thunderstorm',
+        'fog': 'Fog',
+        'water_drop': 'Rain'
+    };
+    return map[icon] || 'Cloudy';
+};
+
+const externalTooltipHandler = (context) => {
+    initTooltip();
+    if (!tooltipNodes) return;
+
+    const { chart, tooltip } = context;
+
+    if (tooltip.opacity === 0) {
+        tooltipNodes.root.classList.remove('visible');
+        return;
+    }
+
+    const dataIndex = tooltip.dataPoints[0].dataIndex;
+    const state = store.getState();
+    const hourlyData = state.hourly && state.hourly[dataIndex];
+    const selectedMetric = state.ui.selectedHourlyMetric;
+
+    if (hourlyData) {
+        tooltipNodes.icon.textContent = hourlyData.icon || 'cloud';
+        tooltipNodes.condition.textContent = getConditionFromIcon(hourlyData.icon);
+
+        let timeLabel = hourlyData.time || '--:--';
+        if (timeLabel.includes(':')) {
+            const [hr] = timeLabel.split(':');
+            const dateObj = new Date();
+            dateObj.setHours(parseInt(hr, 10), 0, 0);
+            if (!isNaN(dateObj.getTime())) {
+                timeLabel = dateObj.toLocaleTimeString('en-US', { hour: 'numeric' });
+            }
+        }
+        tooltipNodes.time.textContent = timeLabel;
+
+        tooltipNodes.metrics.temp.value.textContent = Number.isFinite(hourlyData.temperature) ? `${Math.round(hourlyData.temperature)}°` : '--°';
+        const feelsLikeVal = Number.isFinite(hourlyData.feelsLike) ? hourlyData.feelsLike : hourlyData.temperature;
+        tooltipNodes.metrics.feelsLike.value.textContent = Number.isFinite(feelsLikeVal) ? `${Math.round(feelsLikeVal)}°` : '--°';
+        tooltipNodes.metrics.rainChance.value.textContent = Number.isFinite(hourlyData.rainChance) ? `${hourlyData.rainChance}%` : '--%';
+        tooltipNodes.metrics.windSpeed.value.textContent = Number.isFinite(hourlyData.windSpeed) ? `${Math.round(hourlyData.windSpeed)} km/h` : '-- km/h';
+
+        Object.values(tooltipNodes.metrics).forEach(m => m.wrapper.classList.remove('primary'));
+        
+        let primaryMetricType = 'temp';
+        if (selectedMetric === 'precipitation') primaryMetricType = 'rainChance';
+        if (selectedMetric === 'wind') primaryMetricType = 'windSpeed';
+
+        tooltipNodes.metrics[primaryMetricType].wrapper.classList.add('primary');
+        
+        tooltipNodes.metrics.temp.wrapper.style.order = primaryMetricType === 'temp' ? -1 : 1;
+        tooltipNodes.metrics.rainChance.wrapper.style.order = primaryMetricType === 'rainChance' ? -1 : 2;
+        tooltipNodes.metrics.windSpeed.wrapper.style.order = primaryMetricType === 'windSpeed' ? -1 : 3;
+        tooltipNodes.metrics.feelsLike.wrapper.style.order = 4;
+    }
+
+    const canvasRect = chart.canvas.getBoundingClientRect();
+    
+    let left = canvasRect.left + tooltip.caretX;
+    let top = canvasRect.top + tooltip.caretY - 10;
+
+    const tooltipHeight = tooltipNodes.root.offsetHeight || 160;
+    const tooltipWidth = tooltipNodes.root.offsetWidth || 200;
+
+    top -= tooltipHeight;
+
+    const viewportWidth = window.innerWidth;
+    
+    if (left < tooltipWidth / 2 + 10) {
+        left = tooltipWidth / 2 + 10;
+    } else if (left + tooltipWidth / 2 > viewportWidth - 10) {
+        left = viewportWidth - tooltipWidth / 2 - 10;
+    }
+
+    if (top < 10) {
+        top = canvasRect.top + tooltip.caretY + 20;
+    }
+
+    tooltipNodes.root.style.left = `${left}px`;
+    tooltipNodes.root.style.top = `${top}px`;
+    
+    tooltipNodes.root.classList.add('visible');
+};
+
 function updateHourlyChart(hourlyData, selectedMetric) {
     if (!hourlyData || hourlyData.length === 0) return;
     
@@ -377,11 +505,8 @@ function updateHourlyChart(hourlyData, selectedMetric) {
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return ` ${context.raw}${tooltipSuffix}`;
-                            }
-                        }
+                        enabled: false,
+                        external: externalTooltipHandler
                     }
                 },
                 scales: {
@@ -417,9 +542,6 @@ function updateHourlyChart(hourlyData, selectedMetric) {
 
         hourlyChartInstance.options.scales.y.min = yAxisMin;
         hourlyChartInstance.options.scales.y.max = yAxisMax;
-        hourlyChartInstance.options.plugins.tooltip.callbacks.label = function(context) {
-            return ` ${context.raw}${tooltipSuffix}`;
-        };
         
         hourlyChartInstance.update();
     }

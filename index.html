@@ -496,8 +496,32 @@
         </div>
     </div>
 
-    <!-- Notification System -->
-    <div id="toast-container" class="toast-container" aria-live="assertive"></div>
+    <div id="chart-tooltip" class="glass-panel chart-tooltip" aria-hidden="true">
+        <div class="tooltip-header">
+            <span class="material-symbols-outlined tooltip-icon text-on-surface" style="font-variation-settings: 'FILL' 1;">cloud</span>
+            <span class="tooltip-condition text-body-md font-bold text-on-surface">Cloudy</span>
+        </div>
+        <div class="tooltip-time text-label-caps text-on-surface-variant" style="margin-top: 2px;">--:--</div>
+        
+        <div class="tooltip-metrics">
+            <div class="tooltip-metric" data-type="temp">
+                <span class="metric-label">Temperature</span>
+                <span class="metric-value">--°</span>
+            </div>
+            <div class="tooltip-metric" data-type="feelsLike">
+                <span class="metric-label">Feels Like</span>
+                <span class="metric-value">--°</span>
+            </div>
+            <div class="tooltip-metric" data-type="rainChance">
+                <span class="metric-label">Rain Chance</span>
+                <span class="metric-value">--%</span>
+            </div>
+            <div class="tooltip-metric" data-type="windSpeed">
+                <span class="metric-label">Wind</span>
+                <span class="metric-value">-- km/h</span>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
     <script type="module" src="js/ui.js"></script>

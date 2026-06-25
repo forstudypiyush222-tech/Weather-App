@@ -6,10 +6,13 @@
 import { store } from '../data/store.js';
 
 const DOM = {
-    backgroundContainer: document.getElementById('dashboard-background')
+    layer1: document.getElementById('bg-layer-1'),
+    layer2: document.getElementById('bg-layer-2')
 };
 
 let currentThemeState = null;
+let transitionId = 0;
+let activeLayer = 1;
 
 function handleStateChange(state) {
     if (state.weatherState && state.weatherState !== currentThemeState) {
@@ -18,20 +21,57 @@ function handleStateChange(state) {
 }
 
 function updateTheme(weatherState) {
-    if (!DOM.backgroundContainer) {
-        console.warn('ThemeController: #dashboard-background missing from DOM');
+    if (!DOM.layer1 || !DOM.layer2) {
+        console.warn('ThemeController: Background layers missing from DOM');
         return;
     }
     
-    // Background swapping using inline style
-    DOM.backgroundContainer.style.backgroundImage = `url('assets/Background/${weatherState}.webp')`;
-    
-    // Update data attribute for CSS variable bindings
-    document.documentElement.setAttribute('data-theme', weatherState);
-    
     currentThemeState = weatherState;
+    const currentId = ++transitionId;
+    const imageUrl = `assets/Background/${weatherState}.webp`;
+    
+    // Preload image
+    const img = new Image();
+    img.onload = () => {
+        // Race protection: discard if a newer transition has started
+        if (currentId !== transitionId) return;
+
+        // Determine which layer is inactive and buffer the new image
+        const bufferLayer = activeLayer === 1 ? DOM.layer2 : DOM.layer1;
+        const currentActiveLayer = activeLayer === 1 ? DOM.layer1 : DOM.layer2;
+
+        bufferLayer.style.backgroundImage = `url('${imageUrl}')`;
+        
+        // Force reflow to ensure the CSS transition fires smoothly
+        void bufferLayer.offsetWidth;
+        
+        // Crossfade
+        bufferLayer.classList.add('active');
+        currentActiveLayer.classList.remove('active');
+        
+        // Swap active layer tracker
+        activeLayer = activeLayer === 1 ? 2 : 1;
+        
+        // Update data attribute for CSS variable bindings
+        document.documentElement.setAttribute('data-theme', weatherState);
+    };
+    
+    // Fallback if image fails to load
+    img.onerror = () => {
+        if (currentId === transitionId) {
+            console.warn(`ThemeController: Failed to load background ${imageUrl}`);
+        }
+    };
+    
+    img.src = imageUrl;
 }
 
 export function initThemeController() {
+    // Check DOM requirements
+    if (!DOM.layer1 || !DOM.layer2) {
+        console.warn('ThemeController: Background layers missing from DOM');
+        return;
+    }
+    
     store.subscribe(handleStateChange);
 }

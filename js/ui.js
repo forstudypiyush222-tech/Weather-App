@@ -30,17 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. Search Input Focus State ---
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
-        const searchContainer = searchInput.closest('button'); // The glass panel container
+        const searchContainer = searchInput.closest('.search-box'); // The glass panel container
         
-        searchInput.addEventListener('focus', () => {
-            searchContainer.style.background = 'rgba(255, 255, 255, 0.2)';
-            searchContainer.style.boxShadow = '0 0 0 2px var(--color-primary)';
-        });
-        
-        searchInput.addEventListener('blur', () => {
-            searchContainer.style.background = '';
-            searchContainer.style.boxShadow = '';
-        });
+        if (searchContainer) {
+            searchInput.addEventListener('focus', () => {
+                searchContainer.style.background = 'rgba(255, 255, 255, 0.2)';
+                searchContainer.style.boxShadow = '0 0 0 2px var(--color-primary)';
+            });
+            
+            searchInput.addEventListener('blur', () => {
+                searchContainer.style.background = '';
+                searchContainer.style.boxShadow = '';
+            });
+        }
     }
 
     // --- 3. Profile Dropdown Placeholder ---

@@ -168,10 +168,22 @@ function extractCurrent(currentData, weatherState) {
     };
 }
 
-function extractHourly(forecastData) {
-    if (!forecastData?.forecastday?.[0]?.hour) return [];
+function extractHourly(forecastData, localtime_epoch) {
+    if (!forecastData?.forecastday) return [];
     
-    return forecastData.forecastday[0].hour.map(h => {
+    let combinedHours = [];
+    if (forecastData.forecastday[0]?.hour) {
+        combinedHours = combinedHours.concat(forecastData.forecastday[0].hour);
+    }
+    if (forecastData.forecastday[1]?.hour) {
+        combinedHours = combinedHours.concat(forecastData.forecastday[1].hour);
+    }
+    
+    const fallbackEpoch = localtime_epoch || 0;
+    const futureHours = combinedHours.filter(h => h.time_epoch >= fallbackEpoch);
+    const next24 = futureHours.slice(0, 24);
+
+    return next24.map(h => {
         const [, time] = (h.time || '').split(' ');
         const conditionText = h.condition?.text || '';
         const conditionCode = h.condition?.code || 0;
@@ -280,7 +292,7 @@ export function normalizeWeatherPayload(rawData) {
     const { state: weatherState } = normalizeWeatherState(conditionText, isDay);
 
     const current = extractCurrent(rawData.current, weatherState);
-    const hourly = extractHourly(rawData.forecast);
+    const hourly = extractHourly(rawData.forecast, rawData.location?.localtime_epoch);
     const daily = extractDaily(rawData.forecast);
     const airQuality = extractAirQuality(rawData.current);
     const astronomy = extractAstronomy(rawData.forecast);

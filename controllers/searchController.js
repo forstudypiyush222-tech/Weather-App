@@ -16,8 +16,14 @@ let debounceTimeout = null;
 let isFetching = false;
 let autocompleteDropdown = null;
 
+// Search State
+let highlightedIndex = -1;
+let currentResults = [];
+let originalQuery = '';
+
 function handleSearchInput(event) {
     const query = event.target.value.trim();
+    originalQuery = event.target.value;
     
     if (!query) {
         closeDropdown();
@@ -36,14 +42,88 @@ function handleSearchInput(event) {
     }, 500);
 }
 
-function handleSearchSubmit(event) {
-    if (event.key === 'Enter') {
-        const query = event.target.value.trim();
-        if (query) {
-            closeDropdown();
-            selectCity(query);
+function handleSearchKeydown(event) {
+    if (!autocompleteDropdown) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const query = event.target.value.trim();
+            if (query) {
+                closeDropdown();
+                selectCity(query);
+            }
         }
+        return;
     }
+
+    switch (event.key) {
+        case 'ArrowDown':
+            event.preventDefault();
+            let nextIndex = highlightedIndex + 1;
+            if (nextIndex >= currentResults.length) nextIndex = 0;
+            updateHighlight(nextIndex);
+            break;
+        case 'ArrowUp':
+            event.preventDefault();
+            let upIndex = highlightedIndex - 1;
+            if (upIndex < 0) upIndex = currentResults.length - 1;
+            updateHighlight(upIndex);
+            break;
+        case 'Enter':
+            event.preventDefault();
+            if (highlightedIndex >= 0 && highlightedIndex < currentResults.length) {
+                const selectedCity = currentResults[highlightedIndex].name;
+                closeDropdown();
+                selectCity(selectedCity);
+            } else {
+                const query = event.target.value.trim();
+                if (query) {
+                    closeDropdown();
+                    selectCity(query);
+                }
+            }
+            break;
+        case 'Escape':
+            event.preventDefault();
+            closeDropdown();
+            if (DOM.searchInput) {
+                DOM.searchInput.value = originalQuery;
+            }
+            break;
+    }
+}
+
+function updateHighlight(index) {
+    if (!autocompleteDropdown) return;
+    
+    highlightedIndex = index;
+    const items = autocompleteDropdown.querySelectorAll('.search-dropdown-item');
+    
+    if (index === -1) {
+        items.forEach(item => {
+            item.classList.remove('highlighted');
+            item.setAttribute('aria-selected', 'false');
+        });
+        if (DOM.searchInput) {
+            DOM.searchInput.removeAttribute('aria-activedescendant');
+            DOM.searchInput.value = originalQuery;
+        }
+        return;
+    }
+
+    items.forEach((item, i) => {
+        if (i === index) {
+            item.classList.add('highlighted');
+            item.setAttribute('aria-selected', 'true');
+            item.scrollIntoView({ block: 'nearest' });
+            if (DOM.searchInput) {
+                DOM.searchInput.setAttribute('aria-activedescendant', item.id);
+                DOM.searchInput.value = currentResults[i].name;
+            }
+        } else {
+            item.classList.remove('highlighted');
+            item.setAttribute('aria-selected', 'false');
+        }
+    });
 }
 
 function renderDropdown(results) {
@@ -51,14 +131,28 @@ function renderDropdown(results) {
     if (!results || results.length === 0) return;
     if (!DOM.searchContainer) return;
 
+    currentResults = results;
+    highlightedIndex = -1;
+
     autocompleteDropdown = document.createElement('div');
     autocompleteDropdown.className = 'glass-panel custom-scrollbar search-dropdown';
+    autocompleteDropdown.id = 'search-dropdown-list';
+    autocompleteDropdown.setAttribute('role', 'listbox');
 
-    results.forEach(city => {
+    if (DOM.searchInput) DOM.searchInput.setAttribute('aria-expanded', 'true');
+
+    results.forEach((city, index) => {
         const item = document.createElement('div');
         item.className = 'search-dropdown-item';
+        item.id = `search-item-${index}`;
+        item.setAttribute('role', 'option');
+        item.setAttribute('aria-selected', 'false');
         item.textContent = `${city.name}, ${city.country}`;
         
+        item.addEventListener('mouseenter', () => {
+            updateHighlight(index);
+        });
+
         item.addEventListener('click', () => {
             closeDropdown();
             selectCity(city.name);
@@ -74,6 +168,12 @@ function closeDropdown() {
     if (autocompleteDropdown) {
         autocompleteDropdown.remove();
         autocompleteDropdown = null;
+    }
+    highlightedIndex = -1;
+    currentResults = [];
+    if (DOM.searchInput) {
+        DOM.searchInput.setAttribute('aria-expanded', 'false');
+        DOM.searchInput.removeAttribute('aria-activedescendant');
     }
 }
 
@@ -115,7 +215,7 @@ export async function selectCity(cityString) {
 export function initSearchController() {
     if (DOM.searchInput) {
         DOM.searchInput.addEventListener('input', handleSearchInput);
-        DOM.searchInput.addEventListener('keypress', handleSearchSubmit);
+        DOM.searchInput.addEventListener('keydown', handleSearchKeydown);
     } else {
         console.warn('SearchController: search-input missing from DOM');
     }

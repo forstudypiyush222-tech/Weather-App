@@ -381,7 +381,8 @@ a {
   transition: background-color 0.2s;
 }
 
-.search-dropdown-item:hover {
+.search-dropdown-item:hover,
+.search-dropdown-item.highlighted {
   background-color: rgba(255, 255, 255, 0.1);
 }
 

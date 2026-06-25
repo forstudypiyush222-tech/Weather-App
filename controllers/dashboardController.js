@@ -118,6 +118,15 @@ function showErrorToast(errorMessage) {
 }
 
 function handleStateChange(state) {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        if (state.loading) {
+            loadingOverlay.classList.remove('hidden');
+        } else {
+            loadingOverlay.classList.add('hidden');
+        }
+    }
+
     if (state.loading) return;
     
     if (state.error) {

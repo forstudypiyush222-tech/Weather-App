@@ -314,12 +314,11 @@
                                     <h3 class="text-headline-md font-bold">Hourly Forecast</h3>
                                 </div>
                                 
-                                <div class="chart-container flex-col">
-            <div style="flex-grow: 1; position: relative; width: 100%;">
-                <canvas id="hourly-chart"></canvas>
-            </div>
-                                    
-                                    <div style="overflow-x: auto; padding-bottom: 0.5rem;" class="custom-scrollbar">
+                                <div class="chart-container custom-scrollbar" style="overflow-x: auto; overflow-y: hidden;">
+                                    <div style="display: flex; flex-direction: column; min-width: max-content;">
+                                        <div style="flex-grow: 1; position: relative; width: 100%; min-height: 120px;">
+                                            <canvas id="hourly-chart"></canvas>
+                                        </div>
                                         <div id="hourly-forecast-container" class="hourly-timeline"></div>
                                     </div>
                                 </div>

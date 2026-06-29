@@ -586,6 +586,14 @@ body.onboarding-mode .dashboard-grid {
   gap: 1.5rem;
 }
 
+/* ==========================================
+   Hero Section Baseline Margins (Phase R4)
+   ========================================== */
+.hero-brand-header { margin-bottom: 2.5rem; }
+.hero-feels-like { margin-bottom: 1.5rem; }
+.hero-condition-row { margin-bottom: 1rem; }
+.hero-location-row { margin-bottom: 2rem; }
+
 /* Hero Section */
 .hero-content {
   display: flex;
@@ -1202,6 +1210,39 @@ body.onboarding-mode .dashboard-grid {
   .profile-btn span.text-on-surface-variant {
     display: none;
   }
+}
+
+/* ==========================================
+   Responsive Hero (Phase R4)
+   ========================================== */
+
+/* Tablet Mode */
+@media (max-width: 1024px) {
+  /* Tablet Guardrail: Bounded responsive scaling strategy to prevent overflow on narrow tablets */
+  .text-display-hero {
+    font-size: clamp(4rem, 8vw, 80px);
+    line-height: 1.1;
+  }
+}
+
+/* Mobile Mode */
+@media (max-width: 768px) {
+  .hero-content {
+    padding-left: max(1rem, env(safe-area-inset-left, 0));
+    padding-right: max(1rem, env(safe-area-inset-right, 0));
+  }
+
+  /* Mobile Guardrail: Bounded responsive scaling strategy */
+  .text-display-hero {
+    font-size: clamp(3.5rem, 15vw, 5rem);
+    line-height: 1.1;
+  }
+
+  /* Compress vertical spacing to maximize above-the-fold content */
+  .hero-brand-header { margin-bottom: 1rem; }
+  .hero-feels-like { margin-bottom: 0.75rem; }
+  .hero-condition-row { margin-bottom: 0.5rem; }
+  .hero-location-row { margin-bottom: 1.5rem; }
 }
 
 /* --- Accessibility & Focus Management --- */

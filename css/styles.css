@@ -1235,6 +1235,8 @@ body.onboarding-mode .dashboard-grid {
     flex-wrap: wrap;
     padding-top: max(1rem, env(safe-area-inset-top, 0));
     padding-bottom: 1rem;
+    padding-left: max(var(--spacing-container-padding), env(safe-area-inset-left, 0));
+    padding-right: max(var(--spacing-container-padding), env(safe-area-inset-right, 0));
   }
   
   .app-bar-left {
@@ -1250,6 +1252,24 @@ body.onboarding-mode .dashboard-grid {
     order: 3;
     flex: 0 0 100%;
     margin: 1rem 0 0 0;
+  }
+  
+  .search-box {
+    padding: 0.5rem 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+
+  #search-input {
+    min-width: 0;
+  }
+
+  .search-box .icon-btn {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* Reclaim space on narrow screens */

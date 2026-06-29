@@ -13,6 +13,11 @@ const DOM = {
 let currentThemeState = null;
 let transitionId = 0;
 let activeLayer = 1;
+let currentDeviceCategory = getDeviceCategory();
+
+function getDeviceCategory() {
+    return window.innerWidth <= 768 ? 'Mobile' : 'Desktop';
+}
 
 function handleStateChange(state) {
     if (state.weatherState && state.weatherState !== currentThemeState) {
@@ -26,9 +31,11 @@ function updateTheme(weatherState) {
         return;
     }
     
-    currentThemeState = weatherState;
     const currentId = ++transitionId;
-    const imageUrl = `assets/Background/${weatherState}.webp`;
+    
+    // Determine responsive asset path
+    const folder = currentDeviceCategory === 'Mobile' ? 'mobile/' : '';
+    const imageUrl = `assets/Background/${folder}${weatherState}.webp`;
     
     // Preload image
     const img = new Image();
@@ -52,6 +59,9 @@ function updateTheme(weatherState) {
         // Swap active layer tracker
         activeLayer = activeLayer === 1 ? 2 : 1;
         
+        // Update state to the successfully applied theme
+        currentThemeState = weatherState;
+        
         // Update data attribute for CSS variable bindings
         document.documentElement.setAttribute('data-theme', weatherState);
     };
@@ -74,4 +84,19 @@ export function initThemeController() {
     }
     
     store.subscribe(handleStateChange);
+    
+    // Phase R1: Responsive background switching on category change
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            const newCategory = getDeviceCategory();
+            if (newCategory !== currentDeviceCategory) {
+                currentDeviceCategory = newCategory;
+                if (currentThemeState) {
+                    updateTheme(currentThemeState);
+                }
+            }
+        }, 150);
+    });
 }

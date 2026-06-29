@@ -628,6 +628,18 @@ body.onboarding-mode .dashboard-grid {
   gap: 0.5rem;
 }
 
+/* ==========================================
+   Today's Summary Baseline (Phase R5)
+   ========================================== */
+.summary-title-row { margin-bottom: 1.5rem; }
+.summary-condition-row { margin-bottom: 2rem; }
+.summary-icon-wrapper {
+  width: 4rem;
+  height: 4rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
 /* Summary Card */
 .summary-card-content {
   padding: 1.5rem;
@@ -1243,6 +1255,46 @@ body.onboarding-mode .dashboard-grid {
   .hero-feels-like { margin-bottom: 0.75rem; }
   .hero-condition-row { margin-bottom: 0.5rem; }
   .hero-location-row { margin-bottom: 1.5rem; }
+}
+
+/* ==========================================
+   Responsive Today's Summary (Phase R5)
+   ========================================== */
+
+/* Tablet Mode */
+@media (max-width: 1024px) {
+  /* Override Desktop 100% stretch constraint */
+  .summary-card-content {
+    height: auto;
+  }
+
+  /* Tablet Icon Guardrail */
+  .summary-icon-wrapper {
+    width: clamp(3rem, 6vw, 4rem);
+    height: clamp(3rem, 6vw, 4rem);
+  }
+}
+
+/* Mobile Mode */
+@media (max-width: 768px) {
+  .summary-card-content {
+    padding: 1rem; /* Compress outer padding from 1.5rem */
+  }
+
+  /* Visual Rhythm Consistency: condense internal spacing to match Hero */
+  .summary-title-row { margin-bottom: 1rem; }
+  .summary-condition-row { margin-bottom: 1rem; gap: 1rem; }
+  
+  .summary-icon-wrapper {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  /* Narrow-Screen Content Strategy (Fallback 2 & 3: wrap/stack) */
+  .summary-list-item {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
 }
 
 /* --- Accessibility & Focus Management --- */

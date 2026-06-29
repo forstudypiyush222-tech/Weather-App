@@ -702,6 +702,28 @@ body.onboarding-mode .dashboard-grid {
   flex-shrink: 0;
 }
 
+/* ==========================================
+   Hourly Forecast Baseline (Phase R6)
+   ========================================== */
+.scrollable-chart-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chart-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: max-content;
+}
+
+.canvas-wrapper {
+  flex-grow: 1;
+  position: relative;
+  width: 100%;
+  min-height: 120px;
+}
+
 /* Hourly Forecast */
 .chart-container {
   flex-grow: 1;
@@ -1294,6 +1316,16 @@ body.onboarding-mode .dashboard-grid {
   .summary-list-item {
     flex-wrap: wrap;
     gap: 0.25rem;
+  }
+
+  /* ==========================================
+     Responsive Hourly Forecast (Phase R6)
+     ========================================== */
+  #hourly-forecast-card .card-inner {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: max(1rem, env(safe-area-inset-left, 0));
+    padding-right: max(1rem, env(safe-area-inset-right, 0));
   }
 }
 

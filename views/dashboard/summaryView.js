@@ -3,13 +3,7 @@
  * Renders today's summary card: condition, high/low temps, rain, wind, UV.
  */
 
-function setText(element, text) {
-    if (element) element.textContent = text;
-}
-
-function setIcon(element, iconName) {
-    if (element) element.textContent = iconName;
-}
+import { setText, setIcon } from '../../utils/domHelpers.js';
 
 function getUVClassification(uv) {
     if (!Number.isFinite(uv)) return '--';

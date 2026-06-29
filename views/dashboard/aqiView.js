@@ -3,9 +3,7 @@
  * Renders the Air Quality Index gauge, score, status, and health advisory.
  */
 
-function setText(element, text) {
-    if (element) element.textContent = text;
-}
+import { setText } from '../../utils/domHelpers.js';
 
 const DOM = {
     gaugeFill: document.getElementById('aqi-gauge-fill'),

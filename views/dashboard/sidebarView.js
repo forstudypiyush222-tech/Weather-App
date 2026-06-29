@@ -3,13 +3,7 @@
  * Renders the sidebar location card: city, region, local time, and current conditions.
  */
 
-function setText(element, text) {
-    if (element) element.textContent = text;
-}
-
-function setIcon(element, iconName) {
-    if (element) element.textContent = iconName;
-}
+import { setText, setIcon } from '../../utils/domHelpers.js';
 
 const DOM = {
     city: document.getElementById('sidebar-city'),

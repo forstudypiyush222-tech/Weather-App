@@ -3,13 +3,7 @@
  * Renders the main hero section: temperature, condition, location, and mini-cards.
  */
 
-function setText(element, text) {
-    if (element) element.textContent = text;
-}
-
-function setIcon(element, iconName) {
-    if (element) element.textContent = iconName;
-}
+import { setText, setIcon } from '../../utils/domHelpers.js';
 
 const DOM = {
     temperature: document.getElementById('hero-temperature'),

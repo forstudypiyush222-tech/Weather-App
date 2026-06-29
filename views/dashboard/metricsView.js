@@ -3,9 +3,7 @@
  * Renders the horizontal metrics strip with detailed weather values.
  */
 
-function setText(element, text) {
-    if (element) element.textContent = text;
-}
+import { setText } from '../../utils/domHelpers.js';
 
 const DOM = {
     feelsLike: document.getElementById('metric-feels-like'),

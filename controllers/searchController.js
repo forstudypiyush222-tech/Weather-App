@@ -1,32 +1,52 @@
 /**
  * Aether Weather - Search Controller
- * Phase 4.6
+ * 
+ * Lightweight orchestrator for the search subsystem.
+ * Coordinates between the search dropdown view, weather service,
+ * geolocation service, and storage service.
+ * 
+ * Does not contain DOM creation, browser API calls, or
+ * localStorage access directly.
  */
 
 import { store } from '../data/store.js';
 import { fetchWeatherByCity, fetchWeatherByCoordinates, searchCities } from '../services/weatherService.js';
 import { normalizeWeatherPayload } from '../services/normalizationService.js';
+import { getCurrentPosition, queryGeoPermission } from '../services/geoService.js';
+import { getLastCity, setLastCity, getGeoPreference, setGeoPreference } from '../services/storageService.js';
+import {
+    renderDropdown,
+    closeDropdown,
+    moveHighlight,
+    getHighlightedResult,
+    isOpen,
+    setOriginalQuery,
+    restoreOriginalQuery
+} from '../views/search/searchDropdownView.js';
 
+// ============================================================
+// DOM CACHE
+// ============================================================
 const DOM = {
     searchInput: document.getElementById('search-input'),
     searchContainer: document.getElementById('search-container')
 };
 
+// ============================================================
+// CONTROLLER STATE
+// ============================================================
 let debounceTimeout = null;
 let isFetching = false;
-let autocompleteDropdown = null;
 
-// Search State
-let highlightedIndex = -1;
-let currentResults = [];
-let originalQuery = '';
-
+// ============================================================
+// SEARCH INPUT HANDLERS
+// ============================================================
 function handleSearchInput(event) {
     const query = event.target.value.trim();
-    originalQuery = event.target.value;
-    
+    setOriginalQuery(event.target.value);
+
     if (!query) {
-        closeDropdown();
+        closeDropdown(DOM.searchInput);
         return;
     }
 
@@ -34,21 +54,21 @@ function handleSearchInput(event) {
     debounceTimeout = setTimeout(async () => {
         try {
             const results = await searchCities(query);
-            renderDropdown(results);
+            renderDropdown(results, DOM.searchContainer, DOM.searchInput, selectCity);
         } catch (error) {
             console.warn('Autocomplete fetch failed:', error);
-            closeDropdown();
+            closeDropdown(DOM.searchInput);
         }
     }, 500);
 }
 
 function handleSearchKeydown(event) {
-    if (!autocompleteDropdown) {
+    if (!isOpen()) {
         if (event.key === 'Enter') {
             event.preventDefault();
             const query = event.target.value.trim();
             if (query) {
-                closeDropdown();
+                closeDropdown(DOM.searchInput);
                 selectCity(query);
             }
         }
@@ -58,137 +78,43 @@ function handleSearchKeydown(event) {
     switch (event.key) {
         case 'ArrowDown':
             event.preventDefault();
-            let nextIndex = highlightedIndex + 1;
-            if (nextIndex >= currentResults.length) nextIndex = 0;
-            updateHighlight(nextIndex);
+            moveHighlight('down', DOM.searchInput);
             break;
         case 'ArrowUp':
             event.preventDefault();
-            let upIndex = highlightedIndex - 1;
-            if (upIndex < 0) upIndex = currentResults.length - 1;
-            updateHighlight(upIndex);
+            moveHighlight('up', DOM.searchInput);
             break;
         case 'Enter':
             event.preventDefault();
-            if (highlightedIndex >= 0 && highlightedIndex < currentResults.length) {
-                const selectedCity = currentResults[highlightedIndex].name;
-                closeDropdown();
-                selectCity(selectedCity);
+            const highlighted = getHighlightedResult();
+            if (highlighted) {
+                closeDropdown(DOM.searchInput);
+                selectCity(highlighted.name);
             } else {
                 const query = event.target.value.trim();
                 if (query) {
-                    closeDropdown();
+                    closeDropdown(DOM.searchInput);
                     selectCity(query);
                 }
             }
             break;
         case 'Escape':
             event.preventDefault();
-            closeDropdown();
-            if (DOM.searchInput) {
-                DOM.searchInput.value = originalQuery;
-            }
+            closeDropdown(DOM.searchInput);
+            restoreOriginalQuery(DOM.searchInput);
             break;
     }
 }
 
-function updateHighlight(index) {
-    if (!autocompleteDropdown) return;
-    
-    highlightedIndex = index;
-    const items = autocompleteDropdown.querySelectorAll('.search-dropdown-item');
-    
-    if (index === -1) {
-        items.forEach(item => {
-            item.classList.remove('highlighted');
-            item.setAttribute('aria-selected', 'false');
-        });
-        if (DOM.searchInput) {
-            DOM.searchInput.removeAttribute('aria-activedescendant');
-            DOM.searchInput.value = originalQuery;
-        }
-        return;
-    }
-
-    items.forEach((item, i) => {
-        if (i === index) {
-            item.classList.add('highlighted');
-            item.setAttribute('aria-selected', 'true');
-            item.scrollIntoView({ block: 'nearest' });
-            if (DOM.searchInput) {
-                DOM.searchInput.setAttribute('aria-activedescendant', item.id);
-                DOM.searchInput.value = currentResults[i].name;
-            }
-        } else {
-            item.classList.remove('highlighted');
-            item.setAttribute('aria-selected', 'false');
-        }
-    });
-}
-
-function renderDropdown(results) {
-    closeDropdown(); 
-    if (!results || results.length === 0) return;
-    if (!DOM.searchContainer) return;
-
-    currentResults = results;
-    highlightedIndex = -1;
-
-    autocompleteDropdown = document.createElement('div');
-    autocompleteDropdown.className = 'glass-panel custom-scrollbar search-dropdown';
-    autocompleteDropdown.id = 'search-dropdown-list';
-    autocompleteDropdown.setAttribute('role', 'listbox');
-
-    if (DOM.searchInput) DOM.searchInput.setAttribute('aria-expanded', 'true');
-
-    results.forEach((city, index) => {
-        const item = document.createElement('div');
-        item.className = 'search-dropdown-item';
-        item.id = `search-item-${index}`;
-        item.setAttribute('role', 'option');
-        item.setAttribute('aria-selected', 'false');
-        item.textContent = `${city.name}, ${city.country}`;
-        
-        item.addEventListener('mouseenter', () => {
-            updateHighlight(index);
-        });
-
-        item.addEventListener('click', () => {
-            closeDropdown();
-            selectCity(city.name);
-        });
-        
-        autocompleteDropdown.appendChild(item);
-    });
-
-    DOM.searchContainer.appendChild(autocompleteDropdown);
-}
-
-function closeDropdown() {
-    if (autocompleteDropdown) {
-        autocompleteDropdown.remove();
-        autocompleteDropdown = null;
-    }
-    highlightedIndex = -1;
-    currentResults = [];
-    if (DOM.searchInput) {
-        DOM.searchInput.setAttribute('aria-expanded', 'false');
-        DOM.searchInput.removeAttribute('aria-activedescendant');
-    }
-}
-
-document.addEventListener('click', (e) => {
-    if (autocompleteDropdown && DOM.searchContainer && !DOM.searchContainer.contains(e.target)) {
-        closeDropdown();
-    }
-});
-
+// ============================================================
+// CITY SELECTION (API Orchestration)
+// ============================================================
 export async function selectCity(cityString) {
     if (isFetching) return;
     if (!cityString) return;
 
     isFetching = true;
-    
+
     if (DOM.searchInput) {
         DOM.searchInput.disabled = true;
     }
@@ -198,7 +124,7 @@ export async function selectCity(cityString) {
     try {
         const rawData = await fetchWeatherByCity(cityString);
         const normalizedData = normalizeWeatherPayload(rawData);
-        localStorage.setItem('lastCity', cityString);
+        setLastCity(cityString);
         store.setState({ ...normalizedData, loading: false });
     } catch (error) {
         console.error('Weather fetch failed:', error);
@@ -207,11 +133,56 @@ export async function selectCity(cityString) {
         isFetching = false;
         if (DOM.searchInput) {
             DOM.searchInput.disabled = false;
-            DOM.searchInput.value = ''; 
+            DOM.searchInput.value = '';
         }
     }
 }
 
+// ============================================================
+// GEOLOCATION FLOW
+// ============================================================
+export async function fetchCurrentLocation() {
+    if (isFetching) return;
+
+    isFetching = true;
+    if (DOM.searchInput) DOM.searchInput.disabled = true;
+    store.setState({ loading: true, error: null });
+
+    try {
+        const { latitude, longitude } = await getCurrentPosition({ timeout: 10000 });
+        const rawData = await fetchWeatherByCoordinates(latitude, longitude);
+        const normalizedData = normalizeWeatherPayload(rawData);
+
+        // Save the location string as lastCity so it restores nicely if geolocation is unavailable later
+        if (normalizedData.location && normalizedData.location.city) {
+            setLastCity(normalizedData.location.city);
+        }
+
+        store.setState({ ...normalizedData, loading: false });
+    } catch (error) {
+        console.warn('Geolocation failed or timed out:', error);
+        store.setState({
+            error: 'Unable to determine your location. Showing your saved city instead.',
+            loading: false
+        });
+
+        const lastCity = getLastCity();
+        // Delay slightly to let the error toast be seen, then fallback
+        setTimeout(() => {
+            isFetching = false;
+            selectCity(lastCity);
+        }, 100);
+    } finally {
+        if (!store.getState().error) {
+            isFetching = false;
+        }
+        if (DOM.searchInput) DOM.searchInput.disabled = false;
+    }
+}
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
 export function initSearchController() {
     if (DOM.searchInput) {
         DOM.searchInput.addEventListener('input', handleSearchInput);
@@ -227,7 +198,7 @@ export function initSearchController() {
 
     if (allowBtn) {
         allowBtn.addEventListener('click', () => {
-            localStorage.setItem('aether_geo_preference', 'accepted');
+            setGeoPreference('accepted');
             if (onboarding) {
                 onboarding.classList.add('onboarding-exit');
                 document.body.classList.remove('onboarding-mode');
@@ -240,79 +211,42 @@ export function initSearchController() {
 
     if (skipBtn) {
         skipBtn.addEventListener('click', () => {
-            localStorage.setItem('aether_geo_preference', 'declined');
+            setGeoPreference('declined');
             if (onboarding) {
                 onboarding.classList.add('onboarding-exit');
                 document.body.classList.remove('onboarding-mode');
                 setTimeout(() => onboarding.classList.add('hidden'), 300);
             }
             if (DOM.searchInput) DOM.searchInput.focus();
-            selectCity(localStorage.getItem('lastCity') || 'London');
+            selectCity(getLastCity());
         });
     }
 
     if (locateBtn) {
         locateBtn.addEventListener('click', fetchCurrentLocation);
     }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (isOpen() && DOM.searchContainer && !DOM.searchContainer.contains(e.target)) {
+            closeDropdown(DOM.searchInput);
+        }
+    });
 }
 
-export async function fetchCurrentLocation() {
-    if (isFetching) return;
-    
-    isFetching = true;
-    if (DOM.searchInput) DOM.searchInput.disabled = true;
-    store.setState({ loading: true, error: null });
-
-    try {
-        const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-        });
-
-        const { latitude, longitude } = position.coords;
-        const rawData = await fetchWeatherByCoordinates(latitude, longitude);
-        const normalizedData = normalizeWeatherPayload(rawData);
-        
-        // Save the location string as lastCity so it restores nicely if geolocation is unavailable later
-        if (normalizedData.location && normalizedData.location.city) {
-            localStorage.setItem('lastCity', normalizedData.location.city);
-        }
-        
-        store.setState({ ...normalizedData, loading: false });
-    } catch (error) {
-        console.warn('Geolocation failed or timed out:', error);
-        store.setState({ 
-            error: 'Unable to determine your location. Showing your saved city instead.',
-            loading: false 
-        });
-        
-        const lastCity = localStorage.getItem('lastCity') || 'London';
-        // Delay slightly to let the error toast be seen, then fallback
-        setTimeout(() => {
-            isFetching = false;
-            selectCity(lastCity);
-        }, 100);
-    } finally {
-        if (!store.getState().error) {
-            isFetching = false;
-        }
-        if (DOM.searchInput) DOM.searchInput.disabled = false;
-    }
-}
-
+// ============================================================
+// APP BOOT
+// ============================================================
 export async function bootApp() {
-    const preference = localStorage.getItem('aether_geo_preference');
-    const lastCity = localStorage.getItem('lastCity') || 'London';
+    const preference = getGeoPreference();
+    const lastCity = getLastCity();
 
     // Fast-path for returning users who previously accepted
     if (preference === 'accepted') {
-        try {
-            const status = await navigator.permissions.query({ name: 'geolocation' });
-            if (status.state === 'granted') {
-                fetchCurrentLocation();
-                return;
-            }
-        } catch(e) {
-            console.warn('Permissions query failed', e);
+        const permissionState = await queryGeoPermission();
+        if (permissionState === 'granted') {
+            fetchCurrentLocation();
+            return;
         }
         // Fallback if permissions lost or errored
         selectCity(lastCity);

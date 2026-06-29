@@ -129,12 +129,18 @@
                 </ul>
             </nav>
         </aside>
+        
+        <!-- Sidebar Overlay for Tablet/Mobile -->
+        <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
 
         <!-- Main Content Area -->
         <main class="main-content">
             <!-- Top App Bar -->
             <header class="app-bar">
-                <div class="app-bar-left">
+                <div class="app-bar-left flex-row align-center gap-2">
+                    <button id="mobile-sidebar-toggle" class="icon-btn mobile-menu-btn" aria-expanded="false" aria-controls="sidebar" aria-label="Open Sidebar">
+                        <span class="material-symbols-outlined" style="font-size: 24px;" aria-hidden="true">menu</span>
+                    </button>
                     <!-- Future logo area -->
                 </div>
                 

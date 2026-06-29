@@ -877,6 +877,7 @@ body.onboarding-mode .dashboard-grid {
   overflow-x: auto;
   transition: all 0.2s;
   height: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .metrics-strip:hover {
@@ -1376,6 +1377,22 @@ body.onboarding-mode .dashboard-grid {
   .aqi-gauge-container {
     width: 6rem;
     height: 6rem;
+  }
+
+  /* ==========================================
+     Responsive Metrics Strip (Phase R9)
+     ========================================== */
+  .metrics-strip {
+    padding-left: max(var(--spacing-gutter), env(safe-area-inset-left, 0));
+    padding-right: max(var(--spacing-gutter), env(safe-area-inset-right, 0));
+  }
+  
+  .metrics-container {
+    gap: 1rem;
+  }
+  
+  .metric-item {
+    gap: 0.5rem;
   }
 }
 

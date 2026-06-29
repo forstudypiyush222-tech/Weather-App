@@ -1151,6 +1151,59 @@ body.onboarding-mode .dashboard-grid {
   }
 }
 
+/* ==========================================
+   Responsive Top Navigation (Phase R3)
+   ========================================== */
+
+/* Tablet Mode */
+@media (max-width: 1024px) {
+  .app-bar {
+    padding-top: env(safe-area-inset-top, 0);
+    padding-left: max(var(--spacing-container-padding), env(safe-area-inset-left, 0));
+    padding-right: max(var(--spacing-container-padding), env(safe-area-inset-right, 0));
+  }
+  
+  .app-bar-left, .app-bar-right {
+    flex-shrink: 0;
+  }
+
+  .search-container {
+    flex: 0 1 500px;
+    min-width: 0; /* Prevents flex blowout and jitter during resize */
+    margin: 0 1rem;
+  }
+}
+
+/* Mobile Mode */
+@media (max-width: 768px) {
+  .app-bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding-top: max(1rem, env(safe-area-inset-top, 0));
+    padding-bottom: 1rem;
+  }
+  
+  .app-bar-left {
+    order: 1;
+  }
+  
+  .app-bar-right {
+    order: 2;
+    margin-left: auto;
+  }
+  
+  .search-container {
+    order: 3;
+    flex: 0 0 100%;
+    margin: 1rem 0 0 0;
+  }
+
+  /* Reclaim space on narrow screens */
+  .profile-btn span.text-on-surface-variant {
+    display: none;
+  }
+}
+
 /* --- Accessibility & Focus Management --- */
 button:focus-visible,
 input:focus-visible,

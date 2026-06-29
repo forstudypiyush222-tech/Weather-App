@@ -962,3 +962,7 @@ a:focus-visible,
     scroll-behavior: auto !important;
   }
 }
+
+#chart-tooltip {
+    display: none !important;
+}

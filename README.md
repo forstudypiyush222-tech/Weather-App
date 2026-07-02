@@ -35,55 +35,17 @@ Designed with a strong focus on **clean architecture, responsiveness, user exper
 
 # 🖼️ Preview
 
-> Replace these placeholders with your screenshots before publishing.
-
 ---
 
 ## 🖥️ Desktop
 
-```text
-assets/screenshots/dashboard-desktop.png
-```
-
-```md
-![Desktop Dashboard](assets/screenshots/dashboard-desktop.png)
-```
+<img width="737" height="473" alt="image" src="https://github.com/user-attachments/assets/0fdf4b3e-19d1-4107-b4e1-028cadda8932" />
 
 ---
 
 ## 📱 Mobile
 
-```text
-assets/screenshots/dashboard-mobile.png
-```
-
-```md
-![Mobile Dashboard](assets/screenshots/dashboard-mobile.png)
-```
-
----
-
-## 📲 Tablet
-
-```text
-assets/screenshots/dashboard-tablet.png
-```
-
-```md
-![Tablet Dashboard](assets/screenshots/dashboard-tablet.png)
-```
-
----
-
-## 🎥 Demo GIF
-
-```text
-assets/screenshots/demo.gif
-```
-
-```md
-![Demo](assets/screenshots/demo.gif)
-```
+<img width="78" height="468" alt="image" src="https://github.com/user-attachments/assets/8b62bb03-c070-4f84-998e-38699ba3f899" />
 
 ---
 
